@@ -1,0 +1,5 @@
+# Build files
+.vscode
+node_modules
+out
+dist
