@@ -1,30 +1,45 @@
-type TextIndex = {
-    line: number;
-    start: number;
-    end: number;
-    text: string;
-    globalStart?: number;
-    globalEnd?: number; 
-  };
-  
+import { Position, TextIndex } from "./types";
+
   let textToCheck: string = "";
   let allIndices: TextIndex[] = [];
   let dataToSend: { text: string; indices: TextIndex[] }[] = [];
   let globalOffset = 0;
 
-  function mapApiResponseToOriginalIndices(apiResponse: any, data: { text: string; indices: TextIndex[] }) {
-    return apiResponse.result.map((item: any) => {
-      const match = data.indices.find(
-        (entry) => entry.globalStart! <= item.index && item.index < entry.globalEnd!
-      );
-  
-      return {
-        word: item.word,
-        originalLine: match?.line ?? -1,
-        originalStart: match?.start ?? -1,
-        originalEnd: match?.end ?? -1,
-        suggests: item.suggests,
-      };
+
+
+  function findOriginalPosition(apiIndex: number, originalData: TextIndex[]): Position | null {
+    for (let i = 0; i < originalData.length; i++) {
+      const lineInfo = originalData[i];
+      const nextLine = originalData[i + 1];
+
+      if (apiIndex >= lineInfo.globalStart! && (!nextLine || apiIndex < nextLine.globalStart!)) {
+        return {
+          line: lineInfo.line,
+          start: apiIndex - lineInfo.globalStart! + lineInfo.start,
+          end: apiIndex - lineInfo.globalStart! + lineInfo.start + lineInfo.text.length
+        };
+      }
+    }
+    return null;
+  }
+
+  function mapApiResponseToOriginalIndices(apiResponse: any, data: { text: string; indices: TextIndex[] }): Promise<any[]> {
+    return new Promise((resolve) => {
+      const results = apiResponse.result.map((item: any) => {
+        const match = data.indices.find(
+          (entry) => entry.globalStart! <= item.index && item.index < entry.globalEnd!
+        );
+    
+        return {
+          word: item.word,
+          originalLine: match?.line ?? -1,
+          originalStart: match?.start ?? -1,
+          originalEnd: match?.end ?? -1,
+          suggests: item.suggests,
+          response: apiResponse.result,
+        };
+      });
+      resolve(results);
     });
   }
   
@@ -49,12 +64,10 @@ type TextIndex = {
         });
   
         textToCheck += matchText + " ";
-        globalOffset += matchText.length + 1; // +1 สำหรับช่องว่างที่เพิ่มเข้าไป
+        globalOffset += matchText.length + 1;
   
         if (textToCheck.length >= 1000) {
           dataToSend.push({ text: textToCheck.trim(), indices: [...allIndices] });
-  
-          // รีเซ็ตค่าทั้งหมด
           textToCheck = "";
           allIndices = [];
           globalOffset = 0;
@@ -62,7 +75,6 @@ type TextIndex = {
       }
     }
   
-    // กรณีเหลือข้อมูลท้ายสุดที่ยังไม่ถูกส่ง
     if (textToCheck.length > 0) {
       dataToSend.push({ text: textToCheck.trim(), indices: [...allIndices] });
     }
@@ -71,6 +83,7 @@ type TextIndex = {
   export {
     tabActiveLineCount,
     mapApiResponseToOriginalIndices,
+    findOriginalPosition,
     textToCheck,
     allIndices,
     dataToSend,

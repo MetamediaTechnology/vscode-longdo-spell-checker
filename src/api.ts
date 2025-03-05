@@ -1,3 +1,4 @@
+import { ApiResponse } from "./types";
 
 async function postProof(text: string, indices: any) {
     try {
@@ -12,7 +13,7 @@ async function postProof(text: string, indices: any) {
         }),
       });
 
-      const result = await response.json();
+      const result = await response.json() as ApiResponse;
       return result;
     } catch (error) {
       console.error("Error sending to API:", error);
