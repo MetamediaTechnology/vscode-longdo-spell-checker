@@ -10,8 +10,8 @@
     "Other"
   ],
   "activationEvents": [
-    "onStartupFinished",
-    "onSaveTextDocument"
+    "onLanguage:markdown",
+    "onLanguage:vue"
   ],
   "main": "./out/extension.js",
   "contributes": {
