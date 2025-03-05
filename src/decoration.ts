@@ -8,6 +8,7 @@ export function setDecorations(
   results: { originalPosition: Position }[]
 ) {
   const decorations: vscode.DecorationOptions[] = results.map((result:any) => {
+      clearDecorations(editor);
       const { line, start } = result.originalPosition;
         const wordLength = result.word?.length || 0;
         const range = new vscode.Range(
