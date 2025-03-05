@@ -22,6 +22,13 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
+    - name: Install Xvfb
+      run: sudo apt-get install -y xvfb
+    - name: Start Xvfb
+      run: Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
     - run: npm ci
     - run: npm run lint
-    - run: npm test
+    - name: Run tests with Xvfb
+      run: |
+        export DISPLAY=:99
+        npm test
