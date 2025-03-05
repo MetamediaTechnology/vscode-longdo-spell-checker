@@ -1,8 +1,8 @@
 {
   "name": "longdo-spell",
   "displayName": "longdo-spell",
-  "description": "longdo spell is spell checker html tags ",
-  "version": "0.0.1",
+  "description": "longdo spell is spell checker for vscode for Thai language",
+  "version": "0.1.0",
   "engines": {
     "vscode": "^1.97.0"
   },
