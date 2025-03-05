@@ -6,6 +6,7 @@ import { Position, ProofResponse } from "./types";
 import { Command } from "./command";
 import { setDecorations, clearDecorations } from "./decoration";
 import { openSettingUI } from "./settings";
+import { spellCheckPromises } from "./spell";
 
 export function activate(context: vscode.ExtensionContext) {
   const disposable = vscode.commands.registerCommand(
@@ -21,51 +22,9 @@ export function activate(context: vscode.ExtensionContext) {
 
       tabActiveLineCount(lines, document);
 
-      const spellCheckPromises = dataToSend.map(async (data) => {
-        try {
-          const spell = await postProof(data.text, data.indices);
-          const results = spell?.result || [];
-
-          // Map results to original positions
-          const originalResults = results
-            .map((item: ProofResponse) => ({
-              ...item,
-              originalPosition: findOriginalPosition(item.index, data.indices),
-            }))
-            .filter(
-              (result: { originalPosition: Position }) =>
-                result.originalPosition
-            );
-
-          return originalResults;
-        } catch (error) {
-          console.error("Error during spell checking:", error);
-          return [];
-        }
-      });
-
-      const allResults = await Promise.all(spellCheckPromises);
-      const flattenedResults = allResults.flat();
-
-      setDecorations(editor, flattenedResults);
-
-      // const decorations = flattenedResults.map((result) => {
-      //   const { line, start } = result.originalPosition;
-      //   const wordLength = result.word?.length || 0;
-      //   const range = new vscode.Range(
-      //     new vscode.Position(line, start),
-      //     new vscode.Position(line, start + wordLength)
-      //   );
-
-      //   return {
-      //     range,
-      //     hoverMessage: `คำแนะนำ: ${
-      //       result.suggests?.join(", ") || "ไม่มีคำแนะนำ"
-      //     }`,
-      //   };
-      // });
-
-      // editor.setDecorations(decorationType, decorations);
+      const results = await spellCheckPromises();
+      
+      setDecorations(editor, results);
     }
   );
 
