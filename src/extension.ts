@@ -11,7 +11,7 @@ let errorsResult: ErrorsResult[] = [];
 export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.languages.registerCodeActionsProvider(
-      ["markdown", "vue"],
+      ["markdown", "vue", "javascript", "php", "python", "go", "html", "json", "dart"],
       new Mistakes(),
       {
         providedCodeActionKinds: Mistakes.providedCodeActionKinds,

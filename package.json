@@ -11,7 +11,14 @@
   ],
   "activationEvents": [
     "onLanguage:markdown",
-    "onLanguage:vue"
+    "onLanguage:vue",
+    "onLanguage:javascript",
+    "onLanguage:php",
+    "onLanguage:python",
+    "onLanguage:go",
+    "onLanguage:html",
+    "onLanguage:json",
+    "onLanguage:dart"
   ],
   "main": "./out/extension.js",
   "contributes": {
