@@ -1,18 +1,19 @@
-# vscode-longdo-spell
-
-## Longdo Spell Checker for VS Code
+# Longdo Spell Checker for VS Code 
 
 A VS Code extension that integrates the Longdo Spell Checking service for Thai language text.
 
 ![Longdo Spell Checker](docs/preview.gif)
 
-### Features
+![Longdo Spell Checker Quick fix](docs/preview-2.png)
 
+### Features 💕
+
+* Quick fix suggestions for correcting Thai spelling errors
 * Comprehensive Thai spell checking
 * Support for multiple Thai document types
 * Customizable settings
 
-### Installation
+### Installation ⚒️
 
 Search for "Longdo Spell Checker" in the VS Code Extensions marketplace or install using the command:
 
@@ -26,6 +27,11 @@ ext install longdo-spell
 |----------|---------------|
 | Thai     | Full          |
 | English  | None          |
+
+### ข้อกำหนดการใช้งาน  🤓
+เนื่องด้วยในการตรวจคำจำเป็นต้องใช้ Server ในการประมวลผล ซึ่งจำเป็นต้องมี API Key ก่อนครับ สมัครได้ที่ [Longdo Console](https://map.longdo.com/console/) และทั้งหมดนี้ ฟรี !! ครับ แต่ก็มีจำกัดบ้าง คือ 100,000 ครั้งต่อเดือน กล่าวคือใช้คำสั่งตรวจได้ 100,000 ครั้ง แต่ถ้าข้อความเรายาวจริง ๆ ที่มากกว่า 1024 ตัวอักษร ก็ตัดไปเป็นอีก 1 Request ให้ครับ เช่น พิมพ์ยาวมากเลยเป็นเรียงความ นับได้ 1025 ตัว ก็ตัด 1024 ตัวไปถาม 1 ครั้ง อีก 1 ตัวที่เหลือก็ยิงไปถามอีก 1 ครั้งรวมเป็น 2 แอบไม่คุ้มแต่ก็คิดว่าใช้ยังไงก็น่าจะไม่หมดถ้าไม่ถล่ม
+
+
 
 ### Build Status
 
