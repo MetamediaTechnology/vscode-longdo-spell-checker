@@ -18,19 +18,19 @@
     "commands": [
       {
         "command": "longdo-spell.spell",
-        "title": "Thai Spell Check"
+        "title": "Longdo: Spell Checker"
       },
       {
         "command": "longdo-spell.clear",
-        "title": "Thai Spell Clear"
+        "title": "Longdo: Spell Clear"
       },
       {
         "command": "longdo-spell.setKey",
-        "title": "Thai Spell Set Key"
+        "title": "Longdo: Spell Set Key"
       },
       {
         "command": "longdo-spell.openSettings",
-        "title": "Thai Spell Open Settings"
+        "title": "Longdo: Spell Open Settings"
       }
     ]
   },
