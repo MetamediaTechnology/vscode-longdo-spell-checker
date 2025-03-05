@@ -1,14 +1,24 @@
 import * as vscode from "vscode";
-import { tabActiveLineCount, dataToSend, findOriginalPosition } from "./text";
-
-import { postProof } from "./api";
-import { Position, ProofResponse } from "./types";
+import { tabActiveLineCount } from "./text";
 import { Command } from "./command";
-import { setDecorations, clearDecorations } from "./decoration";
 import { openSettingUI } from "./settings";
 import { spellCheckPromises } from "./spell";
+import { setDecorations, clearDecorations } from "./decoration";
+import { ErrorsResult } from "./types";
+
+let errorsResult: ErrorsResult[] = [];
 
 export function activate(context: vscode.ExtensionContext) {
+  context.subscriptions.push(
+    vscode.languages.registerCodeActionsProvider(
+      ["markdown", "vue"],
+      new Mistakes(),
+      {
+        providedCodeActionKinds: Mistakes.providedCodeActionKinds,
+      }
+    )
+  );
+
   const disposable = vscode.commands.registerCommand(
     Command.CheckSpelling,
     async () => {
@@ -17,13 +27,17 @@ export function activate(context: vscode.ExtensionContext) {
         return;
       }
 
+      errorsResult = [];
+
       const document = editor.document;
       const lines = document.lineCount;
 
       tabActiveLineCount(lines, document);
 
       const results = await spellCheckPromises();
-      
+      errorsResult = results;
+      console.log("errorsResult", errorsResult);
+
       setDecorations(editor, results);
     }
   );
@@ -72,6 +86,81 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(clearCommand);
   context.subscriptions.push(setAPIKey);
   context.subscriptions.push(openSettingUICommand);
+}
+
+/**
+ * Provides suggestions for fixing spelling mistakes.
+ */
+export class Mistakes implements vscode.CodeActionProvider {
+  public static readonly providedCodeActionKinds = [
+    vscode.CodeActionKind.QuickFix,
+  ];
+
+  public provideCodeActions(
+    document: vscode.TextDocument,
+    range: vscode.Range
+  ): vscode.CodeAction[] | undefined {
+    if (!this.isAtStartWrongWord(range)) {
+      return;
+    }
+    
+    const lineNumber = range.start.line;
+    const charPosition = range.start.character;
+    
+
+    const matchingErrors = errorsResult.filter(
+      (err) => 
+      err.originalPosition.line === lineNumber &&
+      charPosition >= err.originalPosition.start &&
+      charPosition <= err.originalPosition.end
+    );
+    
+    if (matchingErrors.length === 0) {
+      return;
+    }
+    
+    const error = matchingErrors.sort((a, b) => 
+      Math.abs(a.originalPosition.start - charPosition) - 
+      Math.abs(b.originalPosition.start - charPosition)
+    )[0];
+    
+    const startPos = new vscode.Position(lineNumber, error.originalPosition.start);
+    const endPos = new vscode.Position(lineNumber, (error.originalPosition.start + error.word.length));
+    const errorRange = new vscode.Range(startPos, endPos);
+    
+    return error.suggests.map((suggestion) => {
+      const fix = new vscode.CodeAction(
+      `Replace with: ${suggestion}`,
+      vscode.CodeActionKind.QuickFix
+      );
+      
+      fix.edit = new vscode.WorkspaceEdit();
+      fix.edit.replace(document.uri, errorRange, suggestion);
+      fix.isPreferred = true;
+      fix.command = {
+      title: 'Run Spell Checker',
+      command: Command.CheckSpelling
+      };
+      return fix;
+    });
+  }
+
+  private isAtStartWrongWord(
+    range: vscode.Range
+  ): boolean {
+    const start = range.start;
+    for (const error of errorsResult) {
+      if (error.originalPosition.line === start.line) {
+        if (
+          start.character >= error.originalPosition.start &&
+          start.character <= error.originalPosition.end
+        ) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
 }
 
 export function deactivate() {}
