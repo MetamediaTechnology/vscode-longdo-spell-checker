@@ -1,8 +1,9 @@
 import { ApiResponse } from "./types";
 
+
 async function postProof(text: string, indices: any) {
     try {
-      const response = await fetch("http://localhost:8000/proof", {
+      const response = await fetch("https://api.longdo.com/spell-checker/proof", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -3,25 +3,17 @@ import { tabActiveLineCount, dataToSend, findOriginalPosition } from "./text";
 
 import { postProof } from "./api";
 import { Position, ProofResponse } from "./types";
+import { Command } from "./command";
+import { setDecorations, clearDecorations } from "./decoration";
+import { openSettingUI } from "./settings";
 
 export function activate(context: vscode.ExtensionContext) {
   const disposable = vscode.commands.registerCommand(
-    "longdo-spell.spell",
+    Command.CheckSpelling,
     async () => {
       const editor = vscode.window.activeTextEditor;
       if (!editor) {
         return;
-      }
-
-      const existingDecorations = vscode.window.visibleTextEditors
-        .filter(e => e === editor)
-        .map(e => e.document.uri.toString());
-        
-      if (existingDecorations.length > 0) {
-        const decorationTypes = vscode.window.activeTextEditor?.visibleRanges || [];
-        decorationTypes.forEach(() => {
-          editor.setDecorations(vscode.window.createTextEditorDecorationType({}), []);
-        });
       }
 
       const document = editor.document;
@@ -43,7 +35,7 @@ export function activate(context: vscode.ExtensionContext) {
             .filter(
               (result: { originalPosition: Position }) =>
                 result.originalPosition
-            ); // Filter out items without position data
+            );
 
           return originalResults;
         } catch (error) {
@@ -51,36 +43,76 @@ export function activate(context: vscode.ExtensionContext) {
           return [];
         }
       });
+
       const allResults = await Promise.all(spellCheckPromises);
       const flattenedResults = allResults.flat();
 
-      const decorationType = vscode.window.createTextEditorDecorationType({
-        backgroundColor: "rgba(255, 0, 0, 0.2)",
-        border: "1px solid red",
-        cursor: "pointer",
+      setDecorations(editor, flattenedResults);
+
+      // const decorations = flattenedResults.map((result) => {
+      //   const { line, start } = result.originalPosition;
+      //   const wordLength = result.word?.length || 0;
+      //   const range = new vscode.Range(
+      //     new vscode.Position(line, start),
+      //     new vscode.Position(line, start + wordLength)
+      //   );
+
+      //   return {
+      //     range,
+      //     hoverMessage: `คำแนะนำ: ${
+      //       result.suggests?.join(", ") || "ไม่มีคำแนะนำ"
+      //     }`,
+      //   };
+      // });
+
+      // editor.setDecorations(decorationType, decorations);
+    }
+  );
+
+  const clearCommand = vscode.commands.registerCommand(
+    Command.ClearSpell,
+    async () => {
+      const editor = vscode.window.activeTextEditor;
+      if (!editor) {
+        return;
+      }
+      clearDecorations(editor);
+    }
+  );
+
+  const setAPIKey = vscode.commands.registerCommand(
+    Command.SetAPIKey,
+    async () => {
+      const apiKey = await vscode.window.showInputBox({
+        placeHolder: "Enter your Longdo Dict API key",
+        prompt: "Please enter your API key for Longdo Spell Checker",
+        ignoreFocusOut: true,
       });
 
-      const decorations = flattenedResults.map((result) => {
-        const { line, start } = result.originalPosition;
-        const wordLength = result.word?.length || 0;
-        const range = new vscode.Range(
-          new vscode.Position(line, start),
-          new vscode.Position(line, start + wordLength)
+      if (apiKey) {
+        await vscode.workspace
+          .getConfiguration("longdoSpell")
+          .update("apiKey", apiKey, true);
+        vscode.window.showInformationMessage("API key saved successfully!");
+      } else {
+        vscode.window.showWarningMessage(
+          "API key is required for Longdo Spell Checker to work properly."
         );
+      }
+    }
+  );
 
-        return {
-          range,
-          hoverMessage: `คำแนะนำ: ${
-            result.suggests?.join(", ") || "ไม่มีคำแนะนำ"
-          }`,
-        };
-      });
-      editor.setDecorations(decorationType, decorations);
-    
+  const openSettingUICommand = vscode.commands.registerCommand(
+    "longdo-spell.openSettings",
+    async () => {
+      openSettingUI();
     }
   );
 
   context.subscriptions.push(disposable);
+  context.subscriptions.push(clearCommand);
+  context.subscriptions.push(setAPIKey);
+  context.subscriptions.push(openSettingUICommand);
 }
 
 export function deactivate() {}

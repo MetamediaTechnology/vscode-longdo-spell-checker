@@ -13,6 +13,7 @@ export interface Position {
   line: number;
   start: number;
   end: number;
+  word?: string;
 }
 
 export interface TextIndex {
