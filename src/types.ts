@@ -9,6 +9,13 @@ export interface ProofResponse {
   suggests: string[];
 }
 
+export interface ErrorsResult {
+  word: string;
+  index: number;
+  suggests: string[];
+  originalPosition: Position;
+}
+
 export interface Position {
   line: number;
   start: number;
