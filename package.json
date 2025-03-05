@@ -9,21 +9,36 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onStartupFinished",
+    "onSaveTextDocument"
+  ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
         "command": "longdo-spell.spell",
-        "title": "Longdo Spell"
+        "title": "Longdo: Spell Checker"
+      },
+      {
+        "command": "longdo-spell.clear",
+        "title": "Longdo: Spell Clear"
+      },
+      {
+        "command": "longdo-spell.setKey",
+        "title": "Longdo: Spell Set Key"
+      },
+      {
+        "command": "longdo-spell.openSettings",
+        "title": "Longdo: Spell Open Settings"
       }
     ]
   },
   "scripts": {
-    "vscode:prepublish": "pnpm run compile",
+    "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
-    "pretest": "pnpm run compile && pnpm run lint",
+    "pretest": "npm run compile && npm run lint",
     "lint": "eslint src",
     "test": "vscode-test"
   },

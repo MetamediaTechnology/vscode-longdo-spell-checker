@@ -44,13 +44,19 @@ import { Position, TextIndex } from "./types";
   }
   
   function tabActiveLineCount(lines: number, document: any) {
+    
+    allIndices = [];
+    dataToSend = [];
+    textToCheck = "";
+    globalOffset = 0;
+
     const thaiPattern = /[\u0E00-\u0E7F]+/g;
   
     for (let i = 0; i < lines; i++) {
       const text = document.lineAt(i).text;
       let match;
   
-      thaiPattern.lastIndex = 0; // รีเซ็ต regex ก่อนวนลูป
+      thaiPattern.lastIndex = 0;
       while ((match = thaiPattern.exec(text)) !== null) {
         const matchText = match[0];
   
