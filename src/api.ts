@@ -16,7 +16,6 @@ async function postProof(text: string) {
       });
 
       const result = await response.json() as ApiResponse;
-      console.log(result);
       if (!result.status || result.status !== 200) {
         throw new Error(result?.message || "API Error");
       }
