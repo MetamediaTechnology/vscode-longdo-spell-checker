@@ -2,7 +2,7 @@
   "name": "longdo-spell",
   "displayName": "longdo-spell",
   "description": "longdo spell is spell checker for vscode for Thai language",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "engines": {
     "vscode": "^1.97.0"
   },
