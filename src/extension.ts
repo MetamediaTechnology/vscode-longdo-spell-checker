@@ -3,7 +3,7 @@ import { tabActiveLineCount } from "./text";
 import { Command } from "./command";
 import { openSettingUI } from "./settings";
 import { spellCheckPromises } from "./spell";
-import { setDecorations, clearDecorations, clearDecorationAtPosition } from "./decoration";
+import { setDecorations, clearDecorations } from "./decoration";
 import { ErrorsResult } from "./types";
 
 let errorsResult: ErrorsResult[] = [];
@@ -11,7 +11,17 @@ let errorsResult: ErrorsResult[] = [];
 export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.languages.registerCodeActionsProvider(
-      ["markdown", "vue", "javascript", "php", "python", "go", "html", "json", "dart"],
+      [
+        "markdown",
+        "vue",
+        "javascript",
+        "php",
+        "python",
+        "go",
+        "html",
+        "json",
+        "dart",
+      ],
       new Mistakes(),
       {
         providedCodeActionKinds: Mistakes.providedCodeActionKinds,
@@ -22,36 +32,35 @@ export function activate(context: vscode.ExtensionContext) {
   const disposable = vscode.commands.registerCommand(
     Command.CheckSpelling,
     async () => {
+      errorsResult = [];
+
       const editor = vscode.window.activeTextEditor;
       if (!editor) {
         return;
       }
-
-      errorsResult = [];
-
       const document = editor.document;
       const lines = document.lineCount;
 
       tabActiveLineCount(lines, document);
 
       const results = await spellCheckPromises();
-      errorsResult = results;
       setDecorations(editor, results);
+      errorsResult = results;
     }
   );
 
   const markCheck = vscode.commands.registerCommand(
     "longdo-spell.markCheck",
-    async (startPos, endPos) => {
+    async (fixIndex) => {
       const editor = vscode.window.activeTextEditor;
       if (!editor) {
         return;
       }
-      console.log("markCheck", startPos, endPos);
-      clearDecorationAtPosition(editor, startPos);
+      errorsResult = errorsResult.filter((err) => err !== fixIndex);
+      setDecorations(editor, errorsResult);
     }
   );
-  
+
   const clearCommand = vscode.commands.registerCommand(
     Command.ClearSpell,
     async () => {
@@ -114,52 +123,69 @@ export class Mistakes implements vscode.CodeActionProvider {
     if (!this.isAtStartWrongWord(range)) {
       return;
     }
-    
+
     const lineNumber = range.start.line;
     const charPosition = range.start.character;
-    
 
     const matchingErrors = errorsResult.filter(
-      (err) => 
-      err.originalPosition.line === lineNumber &&
-      charPosition >= err.originalPosition.start &&
-      charPosition <= err.originalPosition.end
+      (err) =>
+        err.originalPosition.line === lineNumber &&
+        charPosition >= err.originalPosition.start &&
+        charPosition <= err.originalPosition.end
     );
-    
+
     if (matchingErrors.length === 0) {
       return;
     }
-    
-    const error = matchingErrors.sort((a, b) => 
-      Math.abs(a.originalPosition.start - charPosition) - 
-      Math.abs(b.originalPosition.start - charPosition)
+
+    const error = matchingErrors.sort(
+      (a, b) =>
+        Math.abs(a.originalPosition.start - charPosition) -
+        Math.abs(b.originalPosition.start - charPosition)
     )[0];
-    
-    const startPos = new vscode.Position(lineNumber, error.originalPosition.start);
-    const endPos = new vscode.Position(lineNumber, (error.originalPosition.start + error.word.length));
+
+    const startPos = new vscode.Position(
+      lineNumber,
+      error.originalPosition.start
+    );
+    const endPos = new vscode.Position(
+      lineNumber,
+      error.originalPosition.start + error.word.length
+    );
     const errorRange = new vscode.Range(startPos, endPos);
-    
-    return error.suggests.map((suggestion) => {
+
+    const fixes = error.suggests.map((suggestion) => {
       const fix = new vscode.CodeAction(
       `Replace with: ${suggestion}`,
       vscode.CodeActionKind.QuickFix
       );
-      
+
       fix.edit = new vscode.WorkspaceEdit();
       fix.edit.replace(document.uri, errorRange, suggestion);
       fix.isPreferred = true;
       fix.command = {
-        "title": "Replace",
-        "command": "longdo-spell.markCheck",
-        "arguments": [startPos, endPos]
+      title: "Replace",
+      command: "longdo-spell.markCheck",
+      arguments: [error],
       };
       return fix;
     });
+    
+    // Add "Mark as Correct" action
+    const markAsCorrect = new vscode.CodeAction(
+      "Mark as Correct",
+      vscode.CodeActionKind.QuickFix
+    );
+    markAsCorrect.command = {
+      title: "Mark as Correct",
+      command: "longdo-spell.markCheck",
+      arguments: [error],
+    };
+    
+    return [...fixes, markAsCorrect];
   }
 
-  private isAtStartWrongWord(
-    range: vscode.Range
-  ): boolean {
+  private isAtStartWrongWord(range: vscode.Range): boolean {
     const start = range.start;
     for (const error of errorsResult) {
       if (error.originalPosition.line === start.line) {
