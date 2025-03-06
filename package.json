@@ -22,6 +22,16 @@
   ],
   "main": "./out/extension.js",
   "contributes": {
+    "configuration": {
+      "title": "Longdo Spell",
+      "properties": {
+        "longdo-spell.apiKey": {
+          "type": "string",
+          "default": "",
+          "description": "Longdo Spell API Key"
+        }
+      }
+    },
     "commands": [
       {
         "command": "longdo-spell.spell",
@@ -32,7 +42,7 @@
         "title": "Longdo: Spell Clear"
       },
       {
-        "command": "longdo-spell.setKey",
+        "command": "longdo-spell.openSetKey",
         "title": "Longdo: Spell Set Key"
       },
       {
