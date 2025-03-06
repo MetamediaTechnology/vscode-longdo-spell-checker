@@ -1,6 +1,11 @@
 export interface ApiResponse<T = any> {
-  success: boolean;
+  status: number;
   result?: T;
+  message?: string;
+}
+
+export interface errorMessage {
+  message: string;
 }
 
 export interface ProofResponse {

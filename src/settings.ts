@@ -42,7 +42,7 @@ function renderHTML() {
  <body>
      <div class="container">
          <h1>Longdo Spell Checker Settings</h1>
-         <p>Enter your Longdo Dict API key below:</p>
+         <p>Enter your Longdo  API key below:</p>
          <input type="text" id="apiKey" placeholder="Enter your API key" />
          <button id="saveButton">Save</button>
      </div>

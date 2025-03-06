@@ -3,15 +3,25 @@ import { tabActiveLineCount } from "./text";
 import { Command } from "./command";
 import { openSettingUI } from "./settings";
 import { spellCheckPromises } from "./spell";
-import { setDecorations, clearDecorations } from "./decoration";
 import { ErrorsResult } from "./types";
+import { onClearDiagnostics, onShowDiagnostics } from "./diagnostics";
 
 let errorsResult: ErrorsResult[] = [];
 
 export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.languages.registerCodeActionsProvider(
-      ["markdown", "vue"],
+      [
+        "markdown",
+        "vue",
+        "javascript",
+        "php",
+        "python",
+        "go",
+        "html",
+        "json",
+        "dart",
+      ],
       new Mistakes(),
       {
         providedCodeActionKinds: Mistakes.providedCodeActionKinds,
@@ -22,23 +32,43 @@ export function activate(context: vscode.ExtensionContext) {
   const disposable = vscode.commands.registerCommand(
     Command.CheckSpelling,
     async () => {
+      errorsResult = [];
+
+
       const editor = vscode.window.activeTextEditor;
       if (!editor) {
         return;
       }
-
-      errorsResult = [];
-
       const document = editor.document;
       const lines = document.lineCount;
-
       tabActiveLineCount(lines, document);
 
+      try {
       const results = await spellCheckPromises();
+      if (results.length === 0) {
+        vscode.window.showInformationMessage("ไม่พบการสะกดคำผิดในเอกสาร โปรดตรวจสอบด้วยตนเองเพื่อความแม่นยำ");
+        return;
+      }
+      onShowDiagnostics(results, editor);
       errorsResult = results;
-      console.log("errorsResult", errorsResult);
+      } catch (error: unknown) {
+        const errorMessage = error instanceof Error 
+          ? error.message 
+          : "An error occurred while checking spelling.";
+        vscode.window.showErrorMessage(errorMessage);
+      }
+    }
+  );
 
-      setDecorations(editor, results);
+  const markCheck = vscode.commands.registerCommand(
+    "longdo-spell.markCheck",
+    async (fixIndex) => {
+      const editor = vscode.window.activeTextEditor;
+      if (!editor) {
+        return;
+      }
+      errorsResult = errorsResult.filter((err) => err !== fixIndex);
+      onShowDiagnostics(errorsResult  , editor);
     }
   );
 
@@ -49,24 +79,28 @@ export function activate(context: vscode.ExtensionContext) {
       if (!editor) {
         return;
       }
-      clearDecorations(editor);
+      onClearDiagnostics(editor);
     }
   );
 
-  const setAPIKey = vscode.commands.registerCommand(
-    Command.SetAPIKey,
+  const openSetApiKey = vscode.commands.registerCommand(
+    Command.OpenSetKey,
     async () => {
       const apiKey = await vscode.window.showInputBox({
-        placeHolder: "Enter your Longdo Dict API key",
+        placeHolder: "Enter your Longdo API key",
         prompt: "Please enter your API key for Longdo Spell Checker",
         ignoreFocusOut: true,
       });
 
       if (apiKey) {
-        await vscode.workspace
-          .getConfiguration("longdoSpell")
-          .update("apiKey", apiKey, true);
-        vscode.window.showInformationMessage("API key saved successfully!");
+        const config = vscode.workspace.getConfiguration("longdo-spell");
+        try {
+          await config.update("apiKey", apiKey, vscode.ConfigurationTarget.Global);
+          vscode.window.showInformationMessage("API key saved successfully!");
+        } catch (error) {
+          console.error("Failed to update API key:", error);
+          vscode.window.showErrorMessage("Failed to save API key. Please try again.");
+        }
       } else {
         vscode.window.showWarningMessage(
           "API key is required for Longdo Spell Checker to work properly."
@@ -74,6 +108,7 @@ export function activate(context: vscode.ExtensionContext) {
       }
     }
   );
+
 
   const openSettingUICommand = vscode.commands.registerCommand(
     "longdo-spell.openSettings",
@@ -84,7 +119,8 @@ export function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(disposable);
   context.subscriptions.push(clearCommand);
-  context.subscriptions.push(setAPIKey);
+  context.subscriptions.push(openSetApiKey);
+  context.subscriptions.push(markCheck);
   context.subscriptions.push(openSettingUICommand);
 }
 
@@ -103,51 +139,69 @@ export class Mistakes implements vscode.CodeActionProvider {
     if (!this.isAtStartWrongWord(range)) {
       return;
     }
-    
+
     const lineNumber = range.start.line;
     const charPosition = range.start.character;
-    
 
     const matchingErrors = errorsResult.filter(
-      (err) => 
-      err.originalPosition.line === lineNumber &&
-      charPosition >= err.originalPosition.start &&
-      charPosition <= err.originalPosition.end
+      (err) =>
+        err.originalPosition.line === lineNumber &&
+        charPosition >= err.originalPosition.start &&
+        charPosition <= err.originalPosition.end
     );
-    
+
     if (matchingErrors.length === 0) {
       return;
     }
-    
-    const error = matchingErrors.sort((a, b) => 
-      Math.abs(a.originalPosition.start - charPosition) - 
-      Math.abs(b.originalPosition.start - charPosition)
+
+    const error = matchingErrors.sort(
+      (a, b) =>
+        Math.abs(a.originalPosition.start - charPosition) -
+        Math.abs(b.originalPosition.start - charPosition)
     )[0];
-    
-    const startPos = new vscode.Position(lineNumber, error.originalPosition.start);
-    const endPos = new vscode.Position(lineNumber, (error.originalPosition.start + error.word.length));
+
+    const startPos = new vscode.Position(
+      lineNumber,
+      error.originalPosition.start
+    );
+    const endPos = new vscode.Position(
+      lineNumber,
+      error.originalPosition.start + error.word.length
+    );
     const errorRange = new vscode.Range(startPos, endPos);
-    
-    return error.suggests.map((suggestion) => {
+
+    const fixes = error.suggests.map((suggestion) => {
       const fix = new vscode.CodeAction(
       `Replace with: ${suggestion}`,
       vscode.CodeActionKind.QuickFix
       );
-      
+
       fix.edit = new vscode.WorkspaceEdit();
       fix.edit.replace(document.uri, errorRange, suggestion);
       fix.isPreferred = true;
       fix.command = {
-      title: 'Run Spell Checker',
-      command: Command.CheckSpelling
+      title: "Replace",
+      command: "longdo-spell.markCheck",
+      arguments: [error],
       };
       return fix;
     });
+    
+    // Add "Mark as Correct" action
+    const markAsCorrect = new vscode.CodeAction(
+      "Mark as Correct",
+      vscode.CodeActionKind.QuickFix
+    );
+    markAsCorrect.command = {
+      title: "Mark as Correct",
+      command: "longdo-spell.markCheck",
+      arguments: [error],
+    };
+    
+    return [...fixes, markAsCorrect];
   }
 
-  private isAtStartWrongWord(
-    range: vscode.Range
-  ): boolean {
+  private isAtStartWrongWord(range: vscode.Range): boolean {
     const start = range.start;
     for (const error of errorsResult) {
       if (error.originalPosition.line === start.line) {

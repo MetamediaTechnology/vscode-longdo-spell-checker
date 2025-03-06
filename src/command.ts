@@ -13,6 +13,12 @@ export enum Command {
   ClearSpell = "longdo-spell.clear",
 
   /**
+   * Command to open the set key
+   */
+
+  OpenSetKey = "longdo-spell.openSetKey",
+
+  /**
    * Command to open the set key.
    */
   SetAPIKey = "longdo-spell.setKey",

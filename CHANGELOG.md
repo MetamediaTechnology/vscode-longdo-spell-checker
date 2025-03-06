@@ -6,6 +6,10 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+### 0.1.1 : 06/03/2568
+ - feat: Changed from just showing underline to showing dianostics, but it does not affect or interfere with the code execution in any way.
+ - feat: Can use quick fix via dianostics popup
+ - 
 
 ### 0.1.0 : 05/03/2568
  - feat: Quick fix for replace of the word is spell errors.
