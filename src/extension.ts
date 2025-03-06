@@ -43,9 +43,16 @@ export function activate(context: vscode.ExtensionContext) {
       const lines = document.lineCount;
       tabActiveLineCount(lines, document);
 
+      try {
       const results = await spellCheckPromises();
       onShowDiagnostics(results, editor);
       errorsResult = results;
+      } catch (error: unknown) {
+        const errorMessage = error instanceof Error 
+          ? error.message 
+          : "An error occurred while checking spelling.";
+        vscode.window.showErrorMessage(errorMessage);
+      }
     }
   );
 
@@ -76,7 +83,7 @@ export function activate(context: vscode.ExtensionContext) {
     Command.SetAPIKey,
     async () => {
       const apiKey = await vscode.window.showInputBox({
-        placeHolder: "Enter your Longdo Dict API key",
+        placeHolder: "Enter your Longdo API key",
         prompt: "Please enter your API key for Longdo Spell Checker",
         ignoreFocusOut: true,
       });

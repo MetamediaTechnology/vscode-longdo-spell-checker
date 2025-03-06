@@ -5,7 +5,7 @@ import { dataToSend, findOriginalPosition } from "./text";
 export async function spellCheckPromises() {
   const spell = dataToSend.map(async (data) => {
     try {
-      const spell = await postProof(data.text, data.indices);
+      const spell = await postProof(data.text);
       const results = spell?.result || [];
       const originalResults = results
         .map((item: ProofResponse) => ({
@@ -18,8 +18,7 @@ export async function spellCheckPromises() {
 
       return originalResults;
     } catch (error) {
-      console.error("Error during spell checking:", error);
-      return [];
+      throw error;
     }
   });
 
