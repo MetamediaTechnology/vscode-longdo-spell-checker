@@ -79,8 +79,8 @@ export function activate(context: vscode.ExtensionContext) {
     }
   );
 
-  const setAPIKey = vscode.commands.registerCommand(
-    Command.SetAPIKey,
+  const openSetApiKey = vscode.commands.registerCommand(
+    Command.OpenSetKey,
     async () => {
       const apiKey = await vscode.window.showInputBox({
         placeHolder: "Enter your Longdo API key",
@@ -89,10 +89,14 @@ export function activate(context: vscode.ExtensionContext) {
       });
 
       if (apiKey) {
-        await vscode.workspace
-          .getConfiguration("longdoSpell")
-          .update("apiKey", apiKey, true);
-        vscode.window.showInformationMessage("API key saved successfully!");
+        const config = vscode.workspace.getConfiguration("longdo-spell");
+        try {
+          await config.update("apiKey", apiKey, vscode.ConfigurationTarget.Global);
+          vscode.window.showInformationMessage("API key saved successfully!");
+        } catch (error) {
+          console.error("Failed to update API key:", error);
+          vscode.window.showErrorMessage("Failed to save API key. Please try again.");
+        }
       } else {
         vscode.window.showWarningMessage(
           "API key is required for Longdo Spell Checker to work properly."
@@ -100,6 +104,7 @@ export function activate(context: vscode.ExtensionContext) {
       }
     }
   );
+
 
   const openSettingUICommand = vscode.commands.registerCommand(
     "longdo-spell.openSettings",
@@ -110,7 +115,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(disposable);
   context.subscriptions.push(clearCommand);
-  context.subscriptions.push(setAPIKey);
+  context.subscriptions.push(openSetApiKey);
   context.subscriptions.push(markCheck);
   context.subscriptions.push(openSettingUICommand);
 }
