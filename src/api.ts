@@ -1,7 +1,8 @@
 import { ApiResponse } from "./types";
+import * as vscode from "vscode";
 
 
-async function postProof(text: string, indices: any) {
+async function postProof(text: string) {
     try {
       const response = await fetch("https://api.longdo.com/spell-checker/proof", {
         method: "POST",
@@ -10,14 +11,18 @@ async function postProof(text: string, indices: any) {
         },
         body: JSON.stringify({
           text,
-          key: "15b2073bdae95b7376e5c4c56427a623",
+          key: vscode.workspace.getConfiguration("longdo-spell").get("apiKey"),
         }),
       });
 
       const result = await response.json() as ApiResponse;
+      console.log(result);
+      if (!result.status || result.status !== 200) {
+        throw new Error(result?.message || "API Error");
+      }
       return result;
-    } catch (error) {
-      console.error("Error sending to API:", error);
+    } catch (error: unknown) {
+      throw error;
     }
   }
 
