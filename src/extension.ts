@@ -3,8 +3,8 @@ import { tabActiveLineCount } from "./text";
 import { Command } from "./command";
 import { openSettingUI } from "./settings";
 import { spellCheckPromises } from "./spell";
-import { setDecorations, clearDecorations } from "./decoration";
 import { ErrorsResult } from "./types";
+import { onClearDiagnostics, onShowDiagnostics } from "./diagnostics";
 
 let errorsResult: ErrorsResult[] = [];
 
@@ -34,17 +34,17 @@ export function activate(context: vscode.ExtensionContext) {
     async () => {
       errorsResult = [];
 
+
       const editor = vscode.window.activeTextEditor;
       if (!editor) {
         return;
       }
       const document = editor.document;
       const lines = document.lineCount;
-
       tabActiveLineCount(lines, document);
 
       const results = await spellCheckPromises();
-      setDecorations(editor, results);
+      onShowDiagnostics(results, editor);
       errorsResult = results;
     }
   );
@@ -57,7 +57,7 @@ export function activate(context: vscode.ExtensionContext) {
         return;
       }
       errorsResult = errorsResult.filter((err) => err !== fixIndex);
-      setDecorations(editor, errorsResult);
+      onShowDiagnostics(errorsResult  , editor);
     }
   );
 
@@ -68,7 +68,7 @@ export function activate(context: vscode.ExtensionContext) {
       if (!editor) {
         return;
       }
-      clearDecorations(editor);
+      onClearDiagnostics(editor);
     }
   );
 
