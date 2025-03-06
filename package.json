@@ -2,12 +2,26 @@
   "name": "longdo-spell",
   "displayName": "longdo-spell",
   "icon": "images/logo.png",
+  "pricing": "Free",
+  "keywords": [
+    "longdo",
+    "spell",
+    "checker",
+    "thai",
+    "language",
+    "thai-spell",
+    "thai-spell-checker",
+    "thai-spell-check"
+  ],
   "description": "longdo spell is spell checker for vscode for Thai language",
+  "publisher": "longdo",
   "version": "0.1.1",
   "engines": {
     "vscode": "^1.97.0"
   },
   "categories": [
+    "Testing",
+    "Language Packs",
     "Other"
   ],
   "activationEvents": [

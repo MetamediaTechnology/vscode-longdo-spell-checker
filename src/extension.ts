@@ -45,6 +45,10 @@ export function activate(context: vscode.ExtensionContext) {
 
       try {
       const results = await spellCheckPromises();
+      if (results.length === 0) {
+        vscode.window.showInformationMessage("ไม่พบการสะกดคำผิดในเอกสาร โปรดตรวจสอบด้วยตนเองเพื่อความแม่นยำ");
+        return;
+      }
       onShowDiagnostics(results, editor);
       errorsResult = results;
       } catch (error: unknown) {
