@@ -1,20 +1,52 @@
 {
   "name": "longdo-spell",
   "displayName": "longdo-spell",
-  "description": "longdo spell is spell checker html tags ",
-  "version": "0.0.1",
+  "icon": "images/logo.png",
+  "pricing": "Free",
+  "keywords": [
+    "longdo",
+    "spell",
+    "checker",
+    "thai",
+    "language",
+    "thai-spell",
+    "thai-spell-checker",
+    "thai-spell-check"
+  ],
+  "description": "longdo spell is spell checker for vscode for Thai language",
+  "publisher": "longdo",
+  "version": "0.1.1",
   "engines": {
     "vscode": "^1.97.0"
   },
   "categories": [
+    "Testing",
+    "Language Packs",
     "Other"
   ],
   "activationEvents": [
     "onLanguage:markdown",
-    "onLanguage:vue"
+    "onLanguage:vue",
+    "onLanguage:javascript",
+    "onLanguage:php",
+    "onLanguage:python",
+    "onLanguage:go",
+    "onLanguage:html",
+    "onLanguage:json",
+    "onLanguage:dart"
   ],
   "main": "./out/extension.js",
   "contributes": {
+    "configuration": {
+      "title": "Longdo Spell",
+      "properties": {
+        "longdo-spell.apiKey": {
+          "type": "string",
+          "default": "",
+          "description": "Longdo Spell API Key"
+        }
+      }
+    },
     "commands": [
       {
         "command": "longdo-spell.spell",
@@ -25,7 +57,7 @@
         "title": "Longdo: Spell Clear"
       },
       {
-        "command": "longdo-spell.setKey",
+        "command": "longdo-spell.openSetKey",
         "title": "Longdo: Spell Set Key"
       },
       {
