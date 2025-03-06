@@ -37,3 +37,13 @@ export function clearDecorations(editor: vscode.TextEditor) {
     editor.setDecorations(decorationType, []);
   }
 }
+
+export function clearDecorationAtPosition(editor: vscode.TextEditor, position: Position) {
+  if (decorationType) {
+    const range = new vscode.Range(
+      new vscode.Position(position.line, position.start),
+      new vscode.Position(position.line, position.end)
+    );
+    editor.setDecorations(decorationType, [{ range }]);
+  }
+}

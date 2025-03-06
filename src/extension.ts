@@ -3,7 +3,7 @@ import { tabActiveLineCount } from "./text";
 import { Command } from "./command";
 import { openSettingUI } from "./settings";
 import { spellCheckPromises } from "./spell";
-import { setDecorations, clearDecorations } from "./decoration";
+import { setDecorations, clearDecorations, clearDecorationAtPosition } from "./decoration";
 import { ErrorsResult } from "./types";
 
 let errorsResult: ErrorsResult[] = [];
@@ -36,12 +36,22 @@ export function activate(context: vscode.ExtensionContext) {
 
       const results = await spellCheckPromises();
       errorsResult = results;
-      console.log("errorsResult", errorsResult);
-
       setDecorations(editor, results);
     }
   );
 
+  const markCheck = vscode.commands.registerCommand(
+    "longdo-spell.markCheck",
+    async (startPos, endPos) => {
+      const editor = vscode.window.activeTextEditor;
+      if (!editor) {
+        return;
+      }
+      console.log("markCheck", startPos, endPos);
+      clearDecorationAtPosition(editor, startPos);
+    }
+  );
+  
   const clearCommand = vscode.commands.registerCommand(
     Command.ClearSpell,
     async () => {
@@ -85,6 +95,7 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(disposable);
   context.subscriptions.push(clearCommand);
   context.subscriptions.push(setAPIKey);
+  context.subscriptions.push(markCheck);
   context.subscriptions.push(openSettingUICommand);
 }
 
@@ -138,8 +149,9 @@ export class Mistakes implements vscode.CodeActionProvider {
       fix.edit.replace(document.uri, errorRange, suggestion);
       fix.isPreferred = true;
       fix.command = {
-      title: 'Run Spell Checker',
-      command: Command.CheckSpelling
+        "title": "Replace",
+        "command": "longdo-spell.markCheck",
+        "arguments": [startPos, endPos]
       };
       return fix;
     });
