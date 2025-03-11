@@ -2,9 +2,11 @@
 
 A VS Code extension that integrates the Longdo Spell Checking service for Thai language text.
 
-![Longdo Spell Checker](docs/preview.gif)
+## Preview
 
-![Longdo Spell Checker Quick fix](docs/preview-2.png)
+![Longdo Spell Checker](https://raw.githubusercontent.com/MetamediaTechnology/vscode-longdo-spell/main/docs/preview.gif)
+
+![Longdo Spell Checker Quick fix](https://raw.githubusercontent.com/MetamediaTechnology/vscode-longdo-spell/main/docs/preview-2.png)
 
 ### Features 💕
 
