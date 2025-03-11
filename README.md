@@ -37,4 +37,4 @@ ext install longdo-spell
 
 ### Build Status
 
-![Build Status](https://github.com/bankjirapan/vscode-longdo-spell/actions/workflows/node.js.yml/badge.svg)
+![Build Status](https://github.com/MetamediaTechnology/vscode-longdo-spell/actions/workflows/node.js.yml/badge.svg)
