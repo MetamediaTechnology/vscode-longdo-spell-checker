@@ -1,9 +1,12 @@
 name: Node.js CI
+permissions:
+  contents: write
 on:
   push:
     branches: [ staging, main ]
   pull_request:
     branches: [ staging, main ]
+
 
 jobs:
   build:
