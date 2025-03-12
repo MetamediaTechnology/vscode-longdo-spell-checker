@@ -48,10 +48,12 @@ jobs:
       - name: Package Extension
         run: vsce package
       - name: Upload VSIX
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: extension-vsix
           path: "*.vsix"
+          retention-days: 1
+  
   release:
     needs: package
     if: github.ref == 'refs/heads/main'
@@ -60,7 +62,7 @@ jobs:
       - uses: actions/checkout@v4
       
       - name: Download packaged VSIX
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: extension-vsix
           path: .
