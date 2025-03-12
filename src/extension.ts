@@ -1,14 +1,14 @@
 import * as vscode from "vscode";
 import { tabActiveLineCount } from "./text";
 import { Command } from "./command";
-import { openSettingUI } from "./settings";
 import { spellCheckPromises } from "./spell";
-import { ErrorsResult } from "./types";
+import { ErrorsResult, TextEditing } from "./types";
 import { onClearDiagnostics, onShowDiagnostics } from "./diagnostics";
 import { Configuration } from "./configuration";
 import { statusBar } from "./ui";
 
 let errorsResult: ErrorsResult[] = [];
+let typeOfError: TextEditing[] = [];
 
 export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
@@ -27,7 +27,7 @@ export function activate(context: vscode.ExtensionContext) {
     Command.CheckSpelling,
     async () => {
       errorsResult = [];
-
+      onClearDiagnostics();
       const editor = vscode.window.activeTextEditor;
       if (!editor) {
         return;
@@ -71,11 +71,7 @@ export function activate(context: vscode.ExtensionContext) {
   const clearCommand = vscode.commands.registerCommand(
     Command.ClearSpell,
     async () => {
-      const editor = vscode.window.activeTextEditor;
-      if (!editor) {
-        return;
-      }
-      onClearDiagnostics(editor);
+      onClearDiagnostics();
     }
   );
 
@@ -133,19 +129,66 @@ export function activate(context: vscode.ExtensionContext) {
     }
   );
 
-  const openSettingUICommand = vscode.commands.registerCommand(
-    "longdo-spell.openSettings",
-    async () => {
-      openSettingUI();
-    }
-  );
-
   context.subscriptions.push(disposable);
   context.subscriptions.push(clearCommand);
   context.subscriptions.push(openSetApiKey);
   context.subscriptions.push(markCheck);
-  // context.subscriptions.push(openSettingUICommand);
   context.subscriptions.push(showQuickPick);
+  context.subscriptions.push(listenerDocumentChanged());
+  // context.subscriptions.push(
+  //   vscode.window.onDidChangeActiveTextEditor(() => {
+  //     console.log("Active text editor changed");
+  //   })
+  // );
+  // context.subscriptions.push(
+  //   vscode.workspace.onDidChangeTextDocument(() => {
+
+  //   })
+  // );
+}
+
+function listenerDocumentChanged() {
+  return vscode.workspace.onDidChangeTextDocument((e) => {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) {
+      return;
+    }
+
+    const changePos = editor.selection.active;
+    const cursorLine = changePos.line;
+
+    const typeOnTheError = errorsResult.find(
+      (error) =>
+        error.originalPosition.line === cursorLine &&
+        changePos.character >= error.originalPosition.start &&
+        changePos.character <= error.originalPosition.start + error.word.length
+    );
+
+    if (typeOnTheError) {
+      const isExist = typeOfError.findIndex((data) => {
+        return data.text === typeOnTheError.word;
+      });
+      if (isExist === -1) {
+        typeOfError.push({
+          type_count: 1,
+          text: typeOnTheError.word,
+        });
+      } else {
+        isExist >= 0 && typeOfError[isExist].type_count++;
+        if (
+          typeOfError[isExist].type_count >= typeOfError[isExist].text.length
+        ) {
+          const index = errorsResult.findIndex(
+            (error) => error.word === typeOfError[isExist].text
+          );
+          if (index >= 0) {
+            errorsResult.splice(index, 1);
+            onShowDiagnostics(errorsResult, editor);
+          }
+        }
+      }
+    }
+  });
 }
 
 /**
@@ -192,6 +235,7 @@ export class Mistakes implements vscode.CodeActionProvider {
       lineNumber,
       error.originalPosition.start + error.word.length
     );
+
     const errorRange = new vscode.Range(startPos, endPos);
 
     const fixes = error.suggests.map((suggestion) => {
