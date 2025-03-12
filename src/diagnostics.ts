@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 
 let diagnosticCollection: vscode.DiagnosticCollection = vscode.languages.createDiagnosticCollection("longdoSpell");
 
-export function onClearDiagnostics(editor: vscode.TextEditor) {
+export function onClearDiagnostics() {
   if (diagnosticCollection) {
     diagnosticCollection.clear();
   }
@@ -33,7 +33,7 @@ export function onShowDiagnostics(
       vscode.DiagnosticSeverity.Information
     );
 
-    diagnostic.source = "Longdo Spell";
+    diagnostic.source = "Longdo Spell Checker";
     return diagnostic;
   });
   diagnosticCollection.set(editor.document.uri, diagnostics);

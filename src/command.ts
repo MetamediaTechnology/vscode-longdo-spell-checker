@@ -29,4 +29,13 @@ export enum Command {
    *
    */
   openSettingUI = "longdo-spell.openSettings",
+
+  /**
+   * 
+   * 
+   * Command to show quick pick for select command.
+   * 
+   */
+
+  showQuickPick = "longdo-spell.showQuickPick",
 }

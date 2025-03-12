@@ -1,6 +1,6 @@
 {
   "name": "longdo-spell",
-  "displayName": "longdo-spell",
+  "displayName": "Longdo Spell Checker",
   "icon": "images/logo.png",
   "pricing": "Free",
   "keywords": [
@@ -13,11 +13,11 @@
     "thai-spell-checker",
     "thai-spell-check"
   ],
-  "description": "longdo spell is spell checker for vscode for Thai language",
-  "publisher": "longdo",
-  "version": "0.1.1",
+  "description": "An extension for VS Code that checks Thai spelling without affecting system execution, developed by the Longdo team, a Thai company.",
+  "publisher": "MetamediaTechnology",
+  "version": "0.1.2",
   "engines": {
-    "vscode": "^1.97.0"
+    "vscode": "^1.80.0"
   },
   "categories": [
     "Testing",
@@ -28,12 +28,25 @@
     "onLanguage:markdown",
     "onLanguage:vue",
     "onLanguage:javascript",
+    "onLanguage:typescript",
     "onLanguage:php",
     "onLanguage:python",
     "onLanguage:go",
     "onLanguage:html",
+    "onLanguage:css",
     "onLanguage:json",
-    "onLanguage:dart"
+    "onLanguage:dart",
+    "onLanguage:ruby",
+    "onLanguage:java",
+    "onLanguage:c",
+    "onLanguage:cpp",
+    "onLanguage:csharp",
+    "onLanguage:xml",
+    "onLanguage:yaml",
+    "onLanguage:plaintext",
+    "onLanguage:shellscript",
+    "onLanguage:sql",
+    "onLanguage:rust"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -43,7 +56,7 @@
         "longdo-spell.apiKey": {
           "type": "string",
           "default": "",
-          "description": "Longdo Spell API Key"
+          "description": "Longdo Spell Checker API Key"
         }
       }
     },
@@ -59,10 +72,6 @@
       {
         "command": "longdo-spell.openSetKey",
         "title": "Longdo: Spell Set Key"
-      },
-      {
-        "command": "longdo-spell.openSettings",
-        "title": "Longdo: Spell Open Settings"
       }
     ]
   },
@@ -75,14 +84,14 @@
     "test": "vscode-test"
   },
   "devDependencies": {
-    "@types/vscode": "^1.97.0",
     "@types/mocha": "^10.0.10",
     "@types/node": "20.x",
+    "@types/vscode": "^1.80.0",
     "@typescript-eslint/eslint-plugin": "^8.17.0",
     "@typescript-eslint/parser": "^8.17.0",
-    "eslint": "^9.16.0",
-    "typescript": "^5.7.2",
     "@vscode/test-cli": "^0.0.10",
-    "@vscode/test-electron": "^2.4.1"
+    "@vscode/test-electron": "^2.4.1",
+    "eslint": "^9.16.0",
+    "typescript": "^5.7.2"
   }
 }

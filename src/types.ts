@@ -36,3 +36,8 @@ export interface TextIndex {
   globalStart: number;
   globalEnd: number;
 }
+
+export interface TextEditing {
+  type_count: number;
+  text: string;
+}
