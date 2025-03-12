@@ -6,6 +6,11 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+### 0.1.2 : 12/03/2568
+ - feat: Added UI improvement with Longdo Spell action buttons in the menu for spell checking, clearing, and key settings
+ - fix: Fixed bug where Diagnostics data wasn't cleared when performing multiple spell checks
+ - improve: Implemented clearing of Diagnostics when removing misspelled word positions
+
 ### 0.1.1 : 06/03/2568
  - feat: Changed from just showing underline to showing dianostics, but it does not affect or interfere with the code execution in any way.
  - feat: Can use quick fix via dianostics popup
