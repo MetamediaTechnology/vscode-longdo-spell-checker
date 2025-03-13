@@ -4,7 +4,7 @@
 
 Longdo Spell Checker is a VSCode extension for Thai spell checking. It highlights errors and suggests corrections, helping you write accurate Thai text effortlessly. 🚀
 
-![Longdo Spell Checker](https://raw.githubusercontent.com/MetamediaTechnology/vscode-longdo-spell/main/docs/preview.gif)
+![Longdo Spell Checker](https://api.longdo.com/spell-checker/static/images/vscode/preview.gif)
 
 ---  
 
@@ -24,7 +24,7 @@ Choose one of the following methods:
 2. Search for **"Longdo Spell Checker"**  
 3. Enter your **API Key**  
 
-![Settings](https://raw.githubusercontent.com/MetamediaTechnology/vscode-longdo-spell/main/docs/setup_1.png)  
+![Settings](https://api.longdo.com/spell-checker/static/images/vscode/setup_1.png)  
 
 #### **Option 2: Set via `settings.json`**  
 1. Open **settings.json**  
