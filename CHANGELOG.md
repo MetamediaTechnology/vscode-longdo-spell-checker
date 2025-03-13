@@ -6,6 +6,11 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+### 0.1.4 : 13/03/2568
+ - fix: Resolved title formatting issues for consistent display
+ - fix(diagnostics): Fixed issue where diagnostics continued to display due to caching previous spell check results
+ - fix(diagnostics): Fixed issue where error notifications persisted after deleting selected misspelled text
+
 ### 0.1.3 : 13/03/2568
  - feat: Hide sidebar menu in the bottom right when no files are open
 
