@@ -56,7 +56,7 @@
         "longdo-spell.apiKey": {
           "type": "string",
           "default": "",
-          "description": "Longdo Spell Checker API Key"
+          "description": "Longdo Spell Checker Api Key"
         }
       }
     },
