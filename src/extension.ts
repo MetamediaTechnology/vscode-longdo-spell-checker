@@ -5,12 +5,23 @@ import { spellCheckPromises } from "./spell";
 import { ErrorsResult, TextEditing } from "./types";
 import { onClearDiagnostics, onShowDiagnostics } from "./diagnostics";
 import { Configuration } from "./configuration";
-import { statusBar } from "./ui";
+import { hideStatusBar, showStatusBar } from "./ui";
 
 let errorsResult: ErrorsResult[] = [];
 let typeOfError: TextEditing[] = [];
 
 export function activate(context: vscode.ExtensionContext) {
+
+  context.subscriptions.push(
+    vscode.window.onDidChangeActiveTextEditor((editor) => {
+      if (editor) {
+        showStatusBar(context);
+      } else {
+        hideStatusBar(context);
+      }
+    })
+  );
+
   context.subscriptions.push(
     vscode.languages.registerCodeActionsProvider(
       Configuration.languages,
@@ -20,8 +31,6 @@ export function activate(context: vscode.ExtensionContext) {
       }
     )
   );
-
-  statusBar(context);
 
   const disposable = vscode.commands.registerCommand(
     Command.CheckSpelling,

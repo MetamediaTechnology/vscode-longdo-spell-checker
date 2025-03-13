@@ -6,6 +6,9 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+### 0.1.3 : 13/03/2568
+ - feat: Hide sidebar menu in the bottom right when no files are open
+
 ### 0.1.2 : 12/03/2568
  - feat: Added UI improvement with Longdo Spell action buttons in the menu for spell checking, clearing, and key settings
  - fix: Fixed bug where Diagnostics data wasn't cleared when performing multiple spell checks
