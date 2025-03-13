@@ -15,7 +15,7 @@
   ],
   "description": "An extension for VS Code that checks Thai spelling without affecting system execution, developed by the Longdo team, a Thai company.",
   "publisher": "MetamediaTechnology",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "engines": {
     "vscode": "^1.80.0"
   },
@@ -63,15 +63,15 @@
     "commands": [
       {
         "command": "longdo-spell.spell",
-        "title": "Longdo: Spell Checker"
+        "title": "Longdo Spell Checker: Check Spelling (Current Tab)"
       },
       {
         "command": "longdo-spell.clear",
-        "title": "Longdo: Spell Clear"
+        "title": "Longdo Spell Checker: Clear All Errors (Current Tab)"
       },
       {
         "command": "longdo-spell.openSetKey",
-        "title": "Longdo: Spell Set Key"
+        "title": "Longdo Spell Checker: Set API Key"
       }
     ]
   },
