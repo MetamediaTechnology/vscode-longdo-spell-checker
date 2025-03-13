@@ -8,20 +8,8 @@ import { Configuration } from "./configuration";
 import { hideStatusBar, showStatusBar } from "./ui";
 
 let errorsResult: ErrorsResult[] = [];
-let typeOfError: TextEditing[] = [];
 
 export function activate(context: vscode.ExtensionContext) {
-
-  context.subscriptions.push(
-    vscode.window.onDidChangeActiveTextEditor((editor) => {
-      if (editor) {
-        showStatusBar(context);
-      } else {
-        hideStatusBar(context);
-      }
-    })
-  );
-
   context.subscriptions.push(
     vscode.languages.registerCodeActionsProvider(
       Configuration.languages,
@@ -80,6 +68,7 @@ export function activate(context: vscode.ExtensionContext) {
   const clearCommand = vscode.commands.registerCommand(
     Command.ClearSpell,
     async () => {
+      errorsResult = [];
       onClearDiagnostics();
     }
   );
@@ -118,7 +107,11 @@ export function activate(context: vscode.ExtensionContext) {
   const showQuickPick = vscode.commands.registerCommand(
     Command.showQuickPick,
     async () => {
-      const options = ["Spell Check", "Clear Spell Check", "Set API Key"];
+      const options = [
+        "Longdo Spell Checker: Check Spelling (Current Tab)",
+        "Longdo Spell Checker: Clear All Errors (Current Tab)",
+        "Longdo Spell Checker: Set API Key",
+      ];
       const selected = await vscode.window.showQuickPick(options, {
         placeHolder: "Select an action",
       });
@@ -126,13 +119,13 @@ export function activate(context: vscode.ExtensionContext) {
       if (!selected) {
         return;
       }
-      if (selected === "Spell Check") {
+      if (options[0] === selected) {
         vscode.commands.executeCommand(Command.CheckSpelling);
       }
-      if (selected === "Clear Spell Check") {
+      if (options[1] === selected) {
         vscode.commands.executeCommand(Command.ClearSpell);
       }
-      if (selected === "Set API Key") {
+      if (options[2] === selected) {
         vscode.commands.executeCommand(Command.OpenSetKey);
       }
     }
@@ -144,22 +137,29 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(markCheck);
   context.subscriptions.push(showQuickPick);
   context.subscriptions.push(listenerDocumentChanged());
-  // context.subscriptions.push(
-  //   vscode.window.onDidChangeActiveTextEditor(() => {
-  //     console.log("Active text editor changed");
-  //   })
-  // );
-  // context.subscriptions.push(
-  //   vscode.workspace.onDidChangeTextDocument(() => {
+  context.subscriptions.push(listenrDocumentActiveChanged(context));
+}
 
-  //   })
-  // );
+function listenrDocumentActiveChanged(context: vscode.ExtensionContext) {
+  return vscode.window.onDidChangeActiveTextEditor((editor) => {
+    if (editor) {
+      showStatusBar(context);
+    } else {
+      hideStatusBar(context);
+    }
+  });
 }
 
 function listenerDocumentChanged() {
   return vscode.workspace.onDidChangeTextDocument((e) => {
     const editor = vscode.window.activeTextEditor;
     if (!editor) {
+      return;
+    }
+
+    // Skip this logic if change was from an undo operation
+    if (e.contentChanges.length > 0 && e.reason === vscode.TextDocumentChangeReason.Undo) {
+      onShowDiagnostics(errorsResult, editor);
       return;
     }
 
@@ -174,28 +174,8 @@ function listenerDocumentChanged() {
     );
 
     if (typeOnTheError) {
-      const isExist = typeOfError.findIndex((data) => {
-        return data.text === typeOnTheError.word;
-      });
-      if (isExist === -1) {
-        typeOfError.push({
-          type_count: 1,
-          text: typeOnTheError.word,
-        });
-      } else {
-        isExist >= 0 && typeOfError[isExist].type_count++;
-        if (
-          typeOfError[isExist].type_count >= typeOfError[isExist].text.length
-        ) {
-          const index = errorsResult.findIndex(
-            (error) => error.word === typeOfError[isExist].text
-          );
-          if (index >= 0) {
-            errorsResult.splice(index, 1);
-            onShowDiagnostics(errorsResult, editor);
-          }
-        }
-      }
+      errorsResult = errorsResult.filter(error => error !== typeOnTheError);
+      onShowDiagnostics(errorsResult, editor);
     }
   });
 }
