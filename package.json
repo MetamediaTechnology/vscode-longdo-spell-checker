@@ -13,8 +13,8 @@
     "thai-spell-checker",
     "thai-spell-check"
   ],
-  "description": "An extension for VS Code that checks Thai spelling without affecting system execution, developed by the Longdo team, a Thai company.",
-  "publisher": "MetamediaTechnology",
+  "description": "Thai Spell Checker for Visual Studio Code",
+  "publisher": "Metamedia Technology",
   "version": "0.1.4",
   "engines": {
     "vscode": "^1.80.0"
