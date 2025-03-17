@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import { ErrorsResult } from "./types";
 
 let diagnosticCollection: vscode.DiagnosticCollection = vscode.languages.createDiagnosticCollection("longdoSpell");
 
@@ -9,7 +10,7 @@ export function onClearDiagnostics() {
 }
 
 export function onShowDiagnostics(
-  results: any[],
+  results: ErrorsResult[],
   editor: vscode.TextEditor,
 ) {
     
