@@ -14,7 +14,7 @@
     "thai-spell-check"
   ],
   "description": "Thai Spell Checker for Visual Studio Code",
-  "publisher": "Metamedia Technology",
+  "publisher": "MetamediaTechnology",
   "version": "0.1.4",
   "engines": {
     "vscode": "^1.80.0"
