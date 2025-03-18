@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { ErrorsResult } from "./types";
+import { ErrorsResult } from "./interface/types";
 
 let diagnosticCollection: vscode.DiagnosticCollection = vscode.languages.createDiagnosticCollection("longdoSpell");
 

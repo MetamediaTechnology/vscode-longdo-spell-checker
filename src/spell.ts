@@ -1,5 +1,5 @@
 import { postProof } from "./api";
-import { Position, ProofResponse } from "./types";
+import { Position, ProofResponse } from "./interface/types";
 import { dataToSend, findOriginalPosition } from "./text";
 
 export async function spellCheckPromises() {

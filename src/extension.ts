@@ -1,8 +1,8 @@
 import * as vscode from "vscode";
-import { tabActiveLineCount } from "./text";
+import { getDocumentText } from "./text";
 import { Command } from "./command";
 import { spellCheckPromises } from "./spell";
-import { ErrorsResult, TextEditing } from "./types";
+import { ErrorsResult, TextEditing } from "./interface/types";
 import { onClearDiagnostics, onShowDiagnostics } from "./diagnostics";
 import { Configuration } from "./configuration";
 import { hideStatusBar, showStatusBar } from "./ui";
@@ -31,7 +31,7 @@ export function activate(context: vscode.ExtensionContext) {
       }
       const document = editor.document;
       const lines = document.lineCount;
-      tabActiveLineCount(lines, document);
+      getDocumentText(lines, document);
 
       try {
         const results = await spellCheckPromises();

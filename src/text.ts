@@ -1,11 +1,15 @@
-import { ApiResponse, Position, TextIndex } from "./types";
-
-const THAI_PATTERN = /[\u0E00-\u0E7F]+/g;
+import { Position, TextIndex } from "./interface/types";
+import * as vscode from "vscode";
 
 let textToCheck: string = "";
 let allIndices: TextIndex[] = [];
 let dataToSend: { text: string; indices: TextIndex[] }[] = [];
 let globalOffset = 0;
+
+const THAI_PATTERN = /[\u0E00-\u0E7F]+/g;
+const ENGLISH_PATTERN = /\b[A-Za-z][a-z]{2,}\b(?!\()/g;
+const EXCLUDE_PATTERN = /\b(function|const|let|var|if|else|while|for|return|class|interface|type|import|export|from|as|of|in|true|false|null|undefined)\b/;
+const CAMELCASE_PATTERN = /^[A-Z][a-z]+[A-Z]/;
 
 function findOriginalPosition(
   apiIndex: number,
@@ -33,73 +37,72 @@ function findOriginalPosition(
   return null;
 }
 
-function mapApiResponseToOriginalIndices(
-  apiResponse: ApiResponse,
-  data: { text: string; indices: TextIndex[] }
-): Promise<any[]> {
-  return new Promise((resolve) => {
-    const results = apiResponse.result.map((item: any) => {
-      const match = data.indices.find(
-        (entry) =>
-          entry.globalStart! <= item.index && item.index < entry.globalEnd!
-      );
+function processMatches(
+  text: string,
+  pattern: RegExp,
+  lineNumber: number,
+  filterFn?: (matchText: string) => boolean
+) {
+  let match;
+  pattern.lastIndex = 0;
 
-      return {
-        word: item.word,
-        originalLine: match?.line ?? -1,
-        originalStart: match?.start ?? -1,
-        originalEnd: match?.end ?? -1,
-        suggests: item.suggests,
-        response: apiResponse.result,
-      };
+  while ((match = pattern.exec(text)) !== null) {
+    const matchText = match[0];
+
+    if (filterFn && filterFn(matchText)) {
+      continue;
+    }
+
+    allIndices.push({
+      line: lineNumber,
+      start: match.index,
+      end: match.index + matchText.length,
+      text: matchText,
+      globalStart: globalOffset,
+      globalEnd: globalOffset + matchText.length,
     });
-    resolve(results);
-  });
+
+    textToCheck += matchText + " ";
+    globalOffset += matchText.length + 1;
+
+    if (textToCheck.length >= 1000) {
+      flushData();
+    }
+  }
 }
 
-function tabActiveLineCount(lines: number, document: any) {
+function flushData() {
+  if (textToCheck.length > 0) {
+    dataToSend.push({ text: textToCheck.trim(), indices: [...allIndices] });
+    textToCheck = "";
+    allIndices = [];
+    globalOffset = 0;
+  }
+}
+
+function getDocumentText(lines: number, document: vscode.TextDocument) {
   allIndices = [];
   dataToSend = [];
   textToCheck = "";
   globalOffset = 0;
 
+  const isVueFile = document.fileName.endsWith(".vue");
+
   for (let i = 0; i < lines; i++) {
     const text = document.lineAt(i).text;
-    let match;
-
-    THAI_PATTERN.lastIndex = 0;
-    while ((match = THAI_PATTERN.exec(text)) !== null) {
-      const matchText = match[0];
-
-      allIndices.push({
-        line: i,
-        start: match.index,
-        end: match.index + matchText.length,
-        text: matchText,
-        globalStart: globalOffset,
-        globalEnd: globalOffset + matchText.length,
+    processMatches(text, THAI_PATTERN, i);
+    if (isVueFile) {
+      processMatches(text, ENGLISH_PATTERN, i, (matchText) => {
+        return EXCLUDE_PATTERN.test(matchText) || CAMELCASE_PATTERN.test(matchText);
       });
-
-      textToCheck += matchText + " ";
-      globalOffset += matchText.length + 1;
-
-      if (textToCheck.length >= 1000) {
-        dataToSend.push({ text: textToCheck.trim(), indices: [...allIndices] });
-        textToCheck = "";
-        allIndices = [];
-        globalOffset = 0;
-      }
     }
   }
 
-  if (textToCheck.length > 0) {
-    dataToSend.push({ text: textToCheck.trim(), indices: [...allIndices] });
-  }
+  flushData();
 }
 
 export {
-  tabActiveLineCount,
-  mapApiResponseToOriginalIndices,
+  getDocumentText,
   findOriginalPosition,
   textToCheck,
   allIndices,
