@@ -86,9 +86,10 @@ jobs:
       - name: Create GitHub Release
         id: create_release
         run: |
+          NOTES=$(awk '/### \[/ {if (found) exit; found=1} found' CHANGELOG.md)
           gh release create "v${{ steps.get_version.outputs.VERSION }}" \
           --title "Release v${{ steps.get_version.outputs.VERSION }}" \
-          --notes "Release v${{ steps.get_version.outputs.VERSION }}" \
+          --notes "$NOTES" \
           --repo ${{ github.repository }} \
           ./*.vsix
         env:
