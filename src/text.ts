@@ -1,5 +1,6 @@
 import { Position, TextIndex } from "./interface/types";
 import * as vscode from "vscode";
+import hljs from "highlight.js";
 
 let textToCheck: string = "";
 let allIndices: TextIndex[] = [];
@@ -80,13 +81,14 @@ function flushData() {
   }
 }
 
-function getDocumentText(lines: number, document: vscode.TextDocument) {
+function getDocumentText(document: vscode.TextDocument) {
   allIndices = [];
   dataToSend = [];
   textToCheck = "";
   globalOffset = 0;
 
-  const isVueFile = document.fileName.endsWith(".vue");
+  const lines = document.lineCount;
+  const isVueFile = document.fileName.split(".").pop() === "vue";
 
   for (let i = 0; i < lines; i++) {
     const text = document.lineAt(i).text;
