@@ -1,4 +1,4 @@
-import { ApiResponse } from "./types";
+import { ApiResponse } from "./interface/types";
 import * as vscode from "vscode";
 
 
