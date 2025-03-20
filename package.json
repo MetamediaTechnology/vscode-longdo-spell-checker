@@ -57,6 +57,30 @@
           "type": "string",
           "default": "",
           "description": "Longdo Spell Checker Api Key"
+        },
+        "longdo-spell.checkOnSave": {
+          "type": "boolean",
+          "default": false,
+          "description": "Check spelling on save"
+        },
+        "longdo-spell.language": {
+          "type": "array",
+          "default": [
+            "Thai"
+          ],
+          "items": {
+            "type": "string",
+            "enum": [
+              "Thai",
+              "English"
+            ]
+          },
+          "uniqueItems": true,
+          "contains": {
+            "const": "Thai"
+          },
+          "minItems": 1,
+          "description": "Languages to check spelling"
         }
       }
     },
@@ -93,5 +117,8 @@
     "@vscode/test-electron": "^2.4.1",
     "eslint": "^9.16.0",
     "typescript": "^5.7.2"
+  },
+  "dependencies": {
+    "highlight.js": "^11.11.1"
   }
 }
