@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { getDocumentText } from "./text";
+import { textProcessor } from "./text";
 import { Command } from "./command";
 import { spellCheckPromises } from "./spell";
 import { ErrorsResult } from "./interface/types";
@@ -123,7 +123,7 @@ async function onSpellCheck() {
     return;
   }
   const document = editor.document;
-  getDocumentText(document);
+  textProcessor.processDocument(document);
 
   try {
     const results = await spellCheckPromises();
@@ -150,7 +150,7 @@ function listenrDocumentActiveChanged(context: vscode.ExtensionContext) {
       return;
     }
     const document = editor.document;
-    getDocumentText(document);
+    textProcessor.processDocument(document);
     onClearDiagnostics();
     errorsResult = [];
     showStatusBar(context);
@@ -199,7 +199,7 @@ function listenerDocumentSaved(): vscode.Disposable {
       if (!editor) {
         return;
       }
-      getDocumentText(document);
+      textProcessor.processDocument(document);
       onClearDiagnostics();
       errorsResult = [];
       onSpellCheck();
