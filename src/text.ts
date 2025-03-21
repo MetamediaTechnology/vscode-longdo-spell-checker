@@ -1,15 +1,15 @@
 import { Position, TextIndex } from "./interface/types";
 import * as vscode from "vscode";
-import hljs from "highlight.js";
 
 let textToCheck: string = "";
 let allIndices: TextIndex[] = [];
-let dataToSend: { text: string; indices: TextIndex[] }[] = [];
+let textData: { text: string; indices: TextIndex[] }[] = [];
 let globalOffset = 0;
 
 const THAI_PATTERN = /[\u0E00-\u0E7F]+/g;
 const ENGLISH_PATTERN = /\b[A-Za-z][a-z]{2,}\b(?!\()/g;
-const EXCLUDE_PATTERN = /\b(function|const|let|var|if|else|while|for|return|class|interface|type|import|export|from|as|of|in|true|false|null|undefined)\b/;
+const EXCLUDE_PATTERN =
+  /\b(function|const|let|var|if|else|while|for|return|class|interface|type|import|export|from|as|of|in|true|false|null|undefined)\b/;
 const CAMELCASE_PATTERN = /^[A-Z][a-z]+[A-Z]/;
 
 function findOriginalPosition(
@@ -74,7 +74,7 @@ function processMatches(
 
 function flushData() {
   if (textToCheck.length > 0) {
-    dataToSend.push({ text: textToCheck.trim(), indices: [...allIndices] });
+    textData.push({ text: textToCheck.trim(), indices: [...allIndices] });
     textToCheck = "";
     allIndices = [];
     globalOffset = 0;
@@ -83,7 +83,7 @@ function flushData() {
 
 function getDocumentText(document: vscode.TextDocument) {
   allIndices = [];
-  dataToSend = [];
+  textData = [];
   textToCheck = "";
   globalOffset = 0;
 
@@ -95,7 +95,9 @@ function getDocumentText(document: vscode.TextDocument) {
     processMatches(text, THAI_PATTERN, i);
     if (isVueFile) {
       processMatches(text, ENGLISH_PATTERN, i, (matchText) => {
-        return EXCLUDE_PATTERN.test(matchText) || CAMELCASE_PATTERN.test(matchText);
+        return (
+          EXCLUDE_PATTERN.test(matchText) || CAMELCASE_PATTERN.test(matchText)
+        );
       });
     }
   }
@@ -108,5 +110,5 @@ export {
   findOriginalPosition,
   textToCheck,
   allIndices,
-  dataToSend,
+  textData,
 };

@@ -1,9 +1,9 @@
 import { postProof } from "./api";
 import { Position, ProofResponse } from "./interface/types";
-import { dataToSend, findOriginalPosition } from "./text";
+import { textData, findOriginalPosition } from "./text";
 
 export async function spellCheckPromises() {
-  const spell = dataToSend.map(async (data) => {
+  const spell = textData.map(async (data) => {
     try {
       const spell = await postProof(data.text);
       const results = spell?.result || [];
