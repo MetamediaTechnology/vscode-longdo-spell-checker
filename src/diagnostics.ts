@@ -19,7 +19,10 @@ export class Diagnostics {
    * @param results - the errors result
    * @param editor - the text editor
    */
-  public static onShowDiagnostics(results: ErrorsResult[], editor: vscode.TextEditor) {
+  public static onShowDiagnostics(
+    results: ErrorsResult[],
+    editor: vscode.TextEditor
+  ) {
     diagnosticCollection.clear();
 
     const diagnostics: vscode.Diagnostic[] = results.map((error) => {
@@ -32,8 +35,10 @@ export class Diagnostics {
 
       const diagnostic = new vscode.Diagnostic(
         range,
-        `"${error.word}" Potentially misspelled. ${
-          error.suggests.length ? `. Suggestions: ${error.suggests.join(", ")}` : ""
+        `"${error.word}" may be misspelled.${
+          error.suggests.length
+            ? ` Suggested corrections: ${error.suggests.join(", ")}`
+            : ""
         }`,
         vscode.DiagnosticSeverity.Information
       );
