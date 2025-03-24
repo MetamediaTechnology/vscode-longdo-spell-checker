@@ -1,6 +1,5 @@
 import { Position, TextIndex } from "./interface/types";
 import * as vscode from "vscode";
-import { languageMap } from "./interface/lang";
 
 // Use a class instead of global variables
 export class TextProcessor {
