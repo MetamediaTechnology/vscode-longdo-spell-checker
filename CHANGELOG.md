@@ -6,7 +6,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
-### [0.2.1] : 24/03/2568
+### [0.2.0] : 24/03/2568
 - fix: Fixed issue with language switching functionality not working correctly
 - feat: Added automatic spell checking option that suppresses notifications
 - improve: Enhanced notification system to respect user preferences
