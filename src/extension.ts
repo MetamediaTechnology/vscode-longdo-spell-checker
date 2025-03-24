@@ -6,10 +6,8 @@ import { ErrorsResult } from "./interface/types";
 import { Diagnostics } from "./diagnostics";
 import { Configuration } from "./configuration";
 import { showStatusBar } from "./ui";
-import { Language } from "./language";
 
 let errorsResult: ErrorsResult[] = [];
-const languageInstance = Language.getInstance();
 
 export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
@@ -130,7 +128,7 @@ async function onSpellCheck() {
   try {
     const results = await spellCheckPromises();
     if (results.length === 0) {
-      vscode.window.showInformationMessage(languageInstance.getTranslation("noResultFound"));
+      vscode.window.showInformationMessage("No spelling errors found.");
       return;
     }
     Diagnostics.onShowDiagnostics(results, editor);

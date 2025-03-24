@@ -15,7 +15,7 @@
   ],
   "description": "Thai Spell Checker for Visual Studio Code",
   "publisher": "MetamediaTechnology",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "engines": {
     "vscode": "^1.80.0"
   },
@@ -109,6 +109,7 @@
     ]
   },
   "scripts": {
+    "build": "vsce package",
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
@@ -129,6 +130,7 @@
   },
   "dependencies": {
     "@types/jsdom": "^21.1.7",
+    "@vscode/vsce": "^3.3.0",
     "highlight.js": "^11.11.1",
     "jsdom": "^26.0.0"
   }

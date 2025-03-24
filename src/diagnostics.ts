@@ -1,8 +1,8 @@
 import * as vscode from "vscode";
 import { ErrorsResult } from "./interface/types";
-import { Language } from "./language";
+// import { Language } from "./language";
 
-const lang = Language.getInstance();
+// const lang = Language.getInstance();
 let diagnosticCollection: vscode.DiagnosticCollection =
   vscode.languages.createDiagnosticCollection("longdoSpell");
 
@@ -32,8 +32,8 @@ export class Diagnostics {
 
       const diagnostic = new vscode.Diagnostic(
         range,
-        `${lang.getTranslation("potentialMistake")} "${error.word}"${
-          error.suggests.length ? `. ${lang.getTranslation("suggest")}: ${error.suggests.join(", ")}` : ""
+        `"${error.word}" Potentially misspelled. ${
+          error.suggests.length ? `. Suggestions: ${error.suggests.join(", ")}` : ""
         }`,
         vscode.DiagnosticSeverity.Information
       );
