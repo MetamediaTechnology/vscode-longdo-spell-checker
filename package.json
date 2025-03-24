@@ -2,6 +2,10 @@
   "name": "longdo-spell",
   "displayName": "Longdo Spell Checker",
   "icon": "images/logo.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MetamediaTechnology/vscode-longdo-spell-checker.git"
+  },
   "pricing": "Free",
   "keywords": [
     "longdo",
