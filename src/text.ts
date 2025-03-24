@@ -102,8 +102,6 @@ export class TextProcessor {
           this.processSpanElement(spanElement, fullText, document);
         }
       }
-      const bodyElement = virtualDOM.window.document.body;
-      this.processDirectTextNodes(bodyElement, fullText, document);
     } else {
       this.processWithThaiTextOnly(document);
     }
@@ -248,7 +246,6 @@ export class TextProcessor {
    * Get the current text data
    */
   public getTextData(): { text: string; indices: TextIndex[] }[] {
-    console.log(this.textData);
     return this.textData;
   }
 

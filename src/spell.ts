@@ -15,7 +15,7 @@ export async function spellCheckPromises(): Promise<SpellCheckResult[]> {
     const spellCheckPromises = textData.map(async (data) => {
       const spell = await postProof(data.text);
       const results = spell?.result || [];
-      
+
       return results
         .map((item: ProofResponse) => ({
           ...item,
