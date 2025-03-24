@@ -3,11 +3,13 @@ import { textProcessor } from "./text";
 import { Command } from "./command";
 import { spellCheckPromises } from "./spell";
 import { ErrorsResult } from "./interface/types";
-import { onClearDiagnostics, onShowDiagnostics } from "./diagnostics";
+import { Diagnostics } from "./diagnostics";
 import { Configuration } from "./configuration";
 import { showStatusBar } from "./ui";
+import { Language } from "./language";
 
 let errorsResult: ErrorsResult[] = [];
+const languageInstance = Language.getInstance();
 
 export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
@@ -35,7 +37,7 @@ export function activate(context: vscode.ExtensionContext) {
         return;
       }
       errorsResult = errorsResult.filter((err) => err !== fixIndex);
-      onShowDiagnostics(errorsResult, editor);
+      Diagnostics.onShowDiagnostics(errorsResult, editor);
     }
   );
 
@@ -43,7 +45,7 @@ export function activate(context: vscode.ExtensionContext) {
     Command.ClearSpell,
     async () => {
       errorsResult = [];
-      onClearDiagnostics();
+      Diagnostics.clearDiagnostics();
     }
   );
 
@@ -117,7 +119,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 async function onSpellCheck() {
   errorsResult = [];
-  onClearDiagnostics();
+  Diagnostics.clearDiagnostics();
   const editor = vscode.window.activeTextEditor;
   if (!editor) {
     return;
@@ -128,12 +130,10 @@ async function onSpellCheck() {
   try {
     const results = await spellCheckPromises();
     if (results.length === 0) {
-      vscode.window.showInformationMessage(
-        "ไม่พบการสะกดคำผิดในเอกสาร โปรดตรวจสอบด้วยตนเองเพื่อความแม่นยำ"
-      );
+      vscode.window.showInformationMessage(languageInstance.getTranslation("noResultFound"));
       return;
     }
-    onShowDiagnostics(results, editor);
+    Diagnostics.onShowDiagnostics(results, editor);
     errorsResult = results;
   } catch (error: unknown) {
     const errorMessage =
@@ -151,7 +151,7 @@ function listenrDocumentActiveChanged(context: vscode.ExtensionContext) {
     }
     const document = editor.document;
     textProcessor.processDocument(document);
-    onClearDiagnostics();
+    Diagnostics.clearDiagnostics();
     errorsResult = [];
     showStatusBar(context);
   });
@@ -169,7 +169,7 @@ function listenerDocumentChanged() {
       e.contentChanges.length > 0 &&
       e.reason === vscode.TextDocumentChangeReason.Undo
     ) {
-      onShowDiagnostics(errorsResult, editor);
+      Diagnostics.onShowDiagnostics(errorsResult, editor);
       return;
     }
 
@@ -185,7 +185,7 @@ function listenerDocumentChanged() {
 
     if (typeOnTheError) {
       errorsResult = errorsResult.filter((error) => error !== typeOnTheError);
-      onShowDiagnostics(errorsResult, editor);
+      Diagnostics.onShowDiagnostics(errorsResult, editor);
     }
   });
 }
@@ -200,7 +200,7 @@ function listenerDocumentSaved(): vscode.Disposable {
         return;
       }
       textProcessor.processDocument(document);
-      onClearDiagnostics();
+      Diagnostics.clearDiagnostics();
       errorsResult = [];
       onSpellCheck();
     });
