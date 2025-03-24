@@ -8,8 +8,12 @@ import { Configuration } from "./configuration";
 import { showStatusBar } from "./ui";
 
 let errorsResult: ErrorsResult[] = [];
+let isEnableOnSave = false;
 
 export function activate(context: vscode.ExtensionContext) {
+  
+  showStatusBar(context);
+
   context.subscriptions.push(
     vscode.languages.registerCodeActionsProvider(
       Configuration.languages,
@@ -105,6 +109,8 @@ export function activate(context: vscode.ExtensionContext) {
     }
   );
 
+  isEnableOnSave = vscode.workspace.getConfiguration("longdo-spell").get("checkOnSave", false);
+
   context.subscriptions.push(disposable);
   context.subscriptions.push(clearCommand);
   context.subscriptions.push(openSetApiKey);
@@ -127,7 +133,7 @@ async function onSpellCheck() {
 
   try {
     const results = await spellCheckPromises();
-    if (results.length === 0) {
+    if (results.length === 0 && !isEnableOnSave) {
       vscode.window.showInformationMessage("No spelling errors found.");
       return;
     }
