@@ -15,7 +15,7 @@
   ],
   "description": "Thai Spell Checker for Visual Studio Code",
   "publisher": "MetamediaTechnology",
-  "version": "0.1.5",
+  "version": "0.2.0",
   "engines": {
     "vscode": "^1.80.0"
   },
@@ -62,6 +62,15 @@
           "type": "boolean",
           "default": false,
           "description": "Check spelling on save"
+        },
+        "longdo-spell.locale": {
+          "type": "string",
+          "enum": [
+            "Thai",
+            "English"
+          ],
+          "default": "Thai",
+          "description": "Set the primary language for spell checking"
         },
         "longdo-spell.language": {
           "type": "array",
