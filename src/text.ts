@@ -6,7 +6,7 @@ import { JSDOM } from "jsdom";
 
 // Use a class instead of global variables
 export class TextProcessor {
-  private static readonly TAGS_ACCEPTED = ["language-xml", "hljs-string"];
+  private static readonly TAGS_ACCEPTED = ["language-xml", "hljs-string", "language-html"];
   private static readonly MAX_TEXT_LENGTH = 1000;
   
   private textToCheck: string = "";
@@ -89,6 +89,7 @@ export class TextProcessor {
     
     for (let i = 0; i < spans.length; i++) {
       const spanElement = spans[i];
+      // console.log(spanElement.className, spans[i]);
       if (TextProcessor.TAGS_ACCEPTED.includes(spanElement.className)) {
         this.processSpanElement(spanElement, fullText, document);
       }

@@ -6,6 +6,15 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+### [0.2.1] : 24/03/2568
+- fix: Fixed issue with language switching functionality not working correctly
+
+### [0.2.0] : 24/03/2568
+- feat: Implemented variable substitution instead of direct text insertion
+- perf: Enhanced code architecture by replacing hardcoded values with variables
+- improve: Refactored implementation to use dynamic variable references for better maintainability
+- feat: Can switch language 
+
 ### [0.1.5] : 17/03/2568
 - perf: Improved code performance through optimization
 - improve: Enhanced TypeScript typings for better type safety and developer experience
