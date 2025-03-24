@@ -1,8 +1,6 @@
-import hljs from "highlight.js";
 import { Position, TextIndex } from "./interface/types";
 import * as vscode from "vscode";
 import { languageMap } from "./interface/lang";
-import { JSDOM } from "jsdom";
 
 // Use a class instead of global variables
 export class TextProcessor {
@@ -66,17 +64,7 @@ export class TextProcessor {
     document: vscode.TextDocument,
     language: string
   ): string {
-    const supportedLanguages = hljs.listLanguages();
-    try {
-      if (supportedLanguages.includes(language)) {
-        return hljs.highlight(document.getText(), { language }).value;
-      }
-      return hljs.highlight(document.getText(), { language: "plaintext" })
-        .value;
-    } catch (error) {
-      return hljs.highlight(document.getText(), { language: "plaintext" })
-        .value;
-    }
+    return document.getText();
   }
 
   /**
@@ -87,24 +75,12 @@ export class TextProcessor {
   ): { text: string; indices: TextIndex[] }[] {
     this.resetState();
 
-    const fileExtension =
-      document.fileName.split(".").pop()?.toLowerCase() || "plaintext";
+    // const fileExtension =
+    //   document.fileName.split(".").pop()?.toLowerCase() || "plaintext";
 
-    const language = languageMap[fileExtension] || fileExtension;
-    if (language === "json") {
-      const jsonFile = this.getHighlightedText(document, "json");
-      const virtualDOM = new JSDOM(jsonFile);
-      const fullText = document.getText();
-      const spans = virtualDOM.window.document.getElementsByTagName("span");
-      for (let i = 0; i < spans.length; i++) {
-        const spanElement = spans[i];
-        if (TextProcessor.TAGS_ACCEPTED.includes(spanElement.className)) {
-          this.processSpanElement(spanElement, fullText, document);
-        }
-      }
-    } else {
-      this.processWithThaiTextOnly(document);
-    }
+    // const language = languageMap[fileExtension] || fileExtension;
+
+    this.processWithThaiTextOnly(document);
 
     this.flushData();
     return this.textData;
