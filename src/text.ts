@@ -1,12 +1,20 @@
-import { Position, TextIndex } from "./interface/types";
+import { LineInfo, Position, ShikiLine, TextIndex } from "./interface/types";
 import * as vscode from "vscode";
-
+import { shikiUtil } from "./lib/shiki";
+import { languageMap } from "./interface/lang";
 // Use a class instead of global variables
 export class TextProcessor {
-  private static readonly TAGS_ACCEPTED = ["hljs-string"];
-  private static readonly MAX_TEXT_LENGTH = 500;
-  private static readonly THAI_PATTERN = /[\u0E00-\u0E7F]/g;
-
+  private static readonly MAX_TEXT_LENGTH = 1000;
+  private static readonly SUPPORTED_COLORS_BY_EXT: Record<string, string[]> = {
+    ts: ["#81A1C1", "#D8DEE9FF"],
+    js: ["#81A1C1", "#D8DEE9FF"],
+    py: ["#88C0D0", "#ECEFF4"],
+    html: ["#EBCB8B", "#D8DEE9FF"],
+    css: ["#81A1C1", "#D8DEE9FF"],
+    json: ["#A3BE8C"],
+    vue: ["#D8DEE9FF"],
+    md: ["#81A1C1", "#D8DEE9FF"],
+  };
   private textToCheck: string = "";
   private allIndices: TextIndex[] = [];
   private textData: { text: string; indices: TextIndex[] }[] = [];
@@ -57,75 +65,81 @@ export class TextProcessor {
   }
 
   /**
-   * Gets highlighted text from document
-   */
-  private getHighlightedText(
-    document: vscode.TextDocument,
-    language: string
-  ): string {
-    return document.getText();
-  }
-
-  /**
    * Process document text and extract relevant content
    */
-  public processDocument(
-    document: vscode.TextDocument
-  ): { text: string; indices: TextIndex[] }[] {
+  public async processDocument({
+    document,
+  }: {
+    document: vscode.TextDocument;
+  }): Promise<{ text: string; indices: TextIndex[] }[]> {
     this.resetState();
 
-    // const fileExtension =
-    //   document.fileName.split(".").pop()?.toLowerCase() || "plaintext";
+    // When unknow file extenstion, assume it's a text file 555
+    const fileExtension =
+      document.fileName.split(".").pop()?.toLowerCase() || "txt";
 
-    // const language = languageMap[fileExtension] || fileExtension;
-
+    const codeLanguage = languageMap[fileExtension] || fileExtension;
+    const codeTokens = await shikiUtil.getCodeTokens(
+      document.getText(),
+      codeLanguage,
+      "nord"
+    );
+    codeTokens.tokens.forEach((line: any[], lineIndex) => {
+      this.processLineWithTokens(fileExtension, line, lineIndex);
+    });
     this.processWithThaiTextOnly(document);
 
     this.flushData();
     return this.textData;
   }
 
+
   /**
-   * Process direct text nodes that aren't in span elements
+   * Process line with tokens
    */
-  private processDirectTextNodes(
-    element: Element,
-    fullText: string,
-    document: vscode.TextDocument
+  private processLineWithTokens(
+    fileExtension: string,
+    line: ShikiLine[],
+    lineIndex: number
   ): void {
-    for (let node of element.childNodes) {
-      if (node.nodeType === 3 && node.textContent?.trim()) {
-        const content = node.textContent.trim();
+    const targetColors = TextProcessor.SUPPORTED_COLORS_BY_EXT[fileExtension];
+    const thaiWordPattern = /[\u0E00-\u0E7F]+/g;
 
-        const hasThai = /[\u0E00-\u0E7F]/.test(content);
-
-        if (hasThai) {
-          const textPosition = fullText.indexOf(content);
-
-          if (textPosition !== -1) {
-            const position = document.positionAt(textPosition);
-
-            this.allIndices.push({
-              line: position.line,
-              start: position.character,
-              end: position.character + content.length,
-              text: content,
-              globalStart: this.globalOffset,
-              globalEnd: this.globalOffset + content.length,
-            });
-
-            this.textToCheck += content + " ";
-            this.globalOffset += content.length + 1;
-
-            if (this.textToCheck.length >= TextProcessor.MAX_TEXT_LENGTH) {
-              this.flushData();
-            }
-          }
-        }
-      } else if (node.nodeType === 1) {
-        this.processDirectTextNodes(node as Element, fullText, document);
-      }
+    if (!targetColors) {
+      console.log("Unsupported file extension:", fileExtension);
+      return;
     }
+    const lines = line.map((token) => [
+      token.content,
+      token.color,
+    ]) as [string, string][];
+   
+    let nonTargetTextLength = 0;
+    lines.forEach((token) => {
+      const [content, color] = token;
+      const isTargetColor = targetColors.includes(color);
+      if (isTargetColor && content.trim().length > 0 && !content.match(thaiWordPattern)) {
+      const start = nonTargetTextLength;
+      const end = nonTargetTextLength + content.length;
+      this.allIndices.push({
+        line: lineIndex,
+        start,
+        end,
+        text: content,
+        globalStart: this.globalOffset,
+        globalEnd: this.globalOffset + content.length,
+      });
+
+      this.textToCheck += content + " ";
+      this.globalOffset += content.length + 1;
+
+      if (this.textToCheck.length >= TextProcessor.MAX_TEXT_LENGTH) {
+        this.flushData();
+      }
+      } else {
+      nonTargetTextLength += content.length;
+      }
+    });
   }
 
   /**
@@ -157,48 +171,6 @@ export class TextProcessor {
 
         this.textToCheck += thaiWord + " ";
         this.globalOffset += thaiWord.length + 1;
-
-        if (this.textToCheck.length >= TextProcessor.MAX_TEXT_LENGTH) {
-          this.flushData();
-        }
-      }
-    }
-  }
-
-  /**
-   * Process individual span elements
-   */
-  private processSpanElement(
-    spanElement: Element,
-    fullText: string,
-    document: vscode.TextDocument
-  ): void {
-    let directTextContent = "";
-
-    for (let node of spanElement.childNodes) {
-      if (node.nodeType === 3) {
-        // Text node
-        directTextContent += node.textContent;
-      }
-    }
-
-    if (directTextContent.trim()) {
-      const textPosition = fullText.indexOf(directTextContent);
-
-      if (textPosition !== -1) {
-        const position = document.positionAt(textPosition);
-
-        this.allIndices.push({
-          line: position.line,
-          start: position.character,
-          end: position.character + directTextContent.length,
-          text: directTextContent,
-          globalStart: this.globalOffset,
-          globalEnd: this.globalOffset + directTextContent.length,
-        });
-
-        this.textToCheck += directTextContent + " ";
-        this.globalOffset += directTextContent.length + 1;
 
         if (this.textToCheck.length >= TextProcessor.MAX_TEXT_LENGTH) {
           this.flushData();
