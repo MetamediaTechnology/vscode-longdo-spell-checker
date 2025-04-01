@@ -41,3 +41,17 @@ export interface TextEditing {
   type_count: number;
   text: string;
 }
+
+export interface ShikiLine {
+  content: string;
+  fontStyle: string;
+  offset: number;
+  color: string;
+}
+
+
+export interface LineInfo {
+  start: number;
+  end: number;
+  isTargetColor: boolean;
+}
