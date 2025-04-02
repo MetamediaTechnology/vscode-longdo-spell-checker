@@ -1,20 +1,10 @@
-import { LineInfo, Position, ShikiLine, TextIndex } from "./interface/types";
+import { Position, ShikiLine, TextIndex } from "./interface/types";
 import * as vscode from "vscode";
 import { shikiUtil } from "./lib/shiki";
 import { languageMap } from "./interface/lang";
 // Use a class instead of global variables
 export class TextProcessor {
   private static readonly MAX_TEXT_LENGTH = 1000;
-  private static readonly SUPPORTED_COLORS_BY_EXT: Record<string, string[]> = {
-    ts: ["#81A1C1", "#D8DEE9FF"],
-    js: ["#A3BE8C"],
-    py: ["#88C0D0", "#ECEFF4"],
-    html: ["#EBCB8B", "#D8DEE9FF"],
-    css: ["#D8DEE9FF"],
-    json: ["#A3BE8C"],
-    vue: ["#D8DEE9FF"],
-    md: ["#D8DEE9FF"],
-  };
   private textToCheck: string = "";
   private allIndices: TextIndex[] = [];
   private textData: { text: string; indices: TextIndex[] }[] = [];
@@ -81,13 +71,14 @@ export class TextProcessor {
     const isSupportedFile = languageMap[fileExtension];
 
     if (!isSupportedFile) {
-      console.log("Unsupported file extension:", fileExtension);
       this.processWithThaiTextOnly(document);
       this.flushData();
       return this.textData;
     } else {
       const codeLanguage = languageMap[fileExtension];
-      const language = Array.isArray(codeLanguage) ? codeLanguage[0] : codeLanguage;
+      const language = Array.isArray(codeLanguage)
+        ? codeLanguage[0]
+        : codeLanguage;
       const codeTokens = await shikiUtil.getCodeTokens(
         document.getText(),
         language,
@@ -110,11 +101,14 @@ export class TextProcessor {
     line: ShikiLine[],
     lineIndex: number
   ): void {
-    const targetColors = TextProcessor.SUPPORTED_COLORS_BY_EXT[fileExtension];
+    const langMapEntry = languageMap[fileExtension];
+    const targetColors = Array.isArray(langMapEntry) && langMapEntry.length > 1 
+      ? langMapEntry[1] 
+      : undefined;
     const thaiWordPattern = /[\u0E00-\u0E7F]+/g;
+    const MAX_BATCH_SIZE = 1024;
 
     if (!targetColors) {
-      console.log("Unsupported file extension:", fileExtension);
       return;
     }
     const lines = line.map((token) => [token.content, token.color]) as [
@@ -122,7 +116,7 @@ export class TextProcessor {
       string
     ][];
 
-    let nonTargetTextLength = 0;
+    let linePosition = 0;
     lines.forEach((token) => {
       const [content, color] = token;
       const isTargetColor = targetColors.includes(color);
@@ -131,8 +125,13 @@ export class TextProcessor {
         content.trim().length > 0 &&
         !content.match(thaiWordPattern)
       ) {
-        const start = nonTargetTextLength;
-        const end = nonTargetTextLength + content.length;
+        const start = linePosition;
+        const end = linePosition + content.length;
+
+        if (this.textToCheck.length + content.length + 1 > MAX_BATCH_SIZE) {
+          this.flushData();
+        }
+
         this.allIndices.push({
           line: lineIndex,
           start,
@@ -145,12 +144,11 @@ export class TextProcessor {
         this.textToCheck += content + " ";
         this.globalOffset += content.length + 1;
 
-        if (this.textToCheck.length >= TextProcessor.MAX_TEXT_LENGTH) {
+        if (this.textToCheck.length >= MAX_BATCH_SIZE) {
           this.flushData();
         }
-      } else {
-        nonTargetTextLength += content.length;
       }
+      linePosition += content.length;
     });
   }
 
