@@ -223,19 +223,18 @@ function listenerDocumentChanged() {
 }
 
 function listenerDocumentSaved(): vscode.Disposable {
-  if (!vscode.workspace.getConfiguration("longdo-spell").get("checkOnSave")) {
+  if (!isEnableOnSave) {
     return { dispose: () => {} };
-  } else {
-    return vscode.workspace.onDidSaveTextDocument((document) => {
-      const editor = vscode.window.activeTextEditor;
-      if (!editor) {
-        return;
-      }
-      textProcessor.processDocument({ document }).then(() => {
-        onSpellCheck();
-      });
-    });
   }
+  return vscode.workspace.onDidSaveTextDocument((document) => {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) {
+      return;
+    }
+    textProcessor.processDocument({ document }).then(() => {
+      onSpellCheck();
+    });
+  });
 }
 
 /**
