@@ -1,0 +1,10 @@
+{
+    "suggest": "Suggest",
+    "noSuggestion": "No suggestion",
+    "noResult": "No result found",
+    "noData": "No data",
+    "loading": "Loading data...",
+    "potentialMistake": "Potentially misspelled words",
+    "search": "Search",
+     "noResultFound": "No misspelled words found in the document. Please verify manually for accuracy"
+}

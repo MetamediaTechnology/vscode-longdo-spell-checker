@@ -1,15 +1,19 @@
 import * as vscode from "vscode";
-import { tabActiveLineCount } from "./text";
+import { textProcessor } from "./text";
 import { Command } from "./command";
 import { spellCheckPromises } from "./spell";
-import { ErrorsResult, TextEditing } from "./types";
-import { onClearDiagnostics, onShowDiagnostics } from "./diagnostics";
+import { ErrorsResult } from "./interface/types";
+import { Diagnostics } from "./diagnostics";
 import { Configuration } from "./configuration";
-import { hideStatusBar, showStatusBar } from "./ui";
+import { showStatusBar } from "./ui";
 
 let errorsResult: ErrorsResult[] = [];
+let markCheckList: ErrorsResult[] = [];
+let isEnableOnSave = false;
 
 export function activate(context: vscode.ExtensionContext) {
+  showStatusBar(context);
+
   context.subscriptions.push(
     vscode.languages.registerCodeActionsProvider(
       Configuration.languages,
@@ -23,45 +27,30 @@ export function activate(context: vscode.ExtensionContext) {
   const disposable = vscode.commands.registerCommand(
     Command.CheckSpelling,
     async () => {
-      errorsResult = [];
-      onClearDiagnostics();
-      const editor = vscode.window.activeTextEditor;
-      if (!editor) {
-        return;
-      }
-      const document = editor.document;
-      const lines = document.lineCount;
-      tabActiveLineCount(lines, document);
-
-      try {
-        const results = await spellCheckPromises();
-        if (results.length === 0) {
-          vscode.window.showInformationMessage(
-            "ไม่พบการสะกดคำผิดในเอกสาร โปรดตรวจสอบด้วยตนเองเพื่อความแม่นยำ"
-          );
-          return;
-        }
-        onShowDiagnostics(results, editor);
-        errorsResult = results;
-      } catch (error: unknown) {
-        const errorMessage =
-          error instanceof Error
-            ? error.message
-            : "An error occurred while checking spelling.";
-        vscode.window.showErrorMessage(errorMessage);
-      }
+      await onSpellCheck();
     }
   );
 
   const markCheck = vscode.commands.registerCommand(
     "longdo-spell.markCheck",
-    async (fixIndex) => {
+    async (fixIndex: ErrorsResult, isAddToMark:boolean) => {
       const editor = vscode.window.activeTextEditor;
       if (!editor) {
         return;
       }
-      errorsResult = errorsResult.filter((err) => err !== fixIndex);
-      onShowDiagnostics(errorsResult, editor);
+
+      if (!isAddToMark) {
+        errorsResult = errorsResult.filter(
+          (error) => error !== fixIndex
+        );
+        Diagnostics.onShowDiagnostics(errorsResult, editor);
+      } else {
+        errorsResult = errorsResult.filter(
+          (error) => error.word !== fixIndex.word
+        );
+        markCheckList.push(fixIndex);
+        Diagnostics.onShowDiagnostics(errorsResult, editor);
+      }
     }
   );
 
@@ -69,7 +58,7 @@ export function activate(context: vscode.ExtensionContext) {
     Command.ClearSpell,
     async () => {
       errorsResult = [];
-      onClearDiagnostics();
+      Diagnostics.clearDiagnostics();
     }
   );
 
@@ -131,23 +120,55 @@ export function activate(context: vscode.ExtensionContext) {
     }
   );
 
+  isEnableOnSave = vscode.workspace
+    .getConfiguration("longdo-spell")
+    .get("checkOnSave", false);
+
   context.subscriptions.push(disposable);
   context.subscriptions.push(clearCommand);
   context.subscriptions.push(openSetApiKey);
   context.subscriptions.push(markCheck);
   context.subscriptions.push(showQuickPick);
   context.subscriptions.push(listenerDocumentChanged());
-  context.subscriptions.push(listenrDocumentActiveChanged(context));
+  context.subscriptions.push(listenerDocumentSaved());
 }
 
-function listenrDocumentActiveChanged(context: vscode.ExtensionContext) {
-  return vscode.window.onDidChangeActiveTextEditor((editor) => {
-    if (editor) {
-      showStatusBar(context);
-    } else {
-      hideStatusBar(context);
+async function onSpellCheck() {
+  errorsResult = [];
+  Diagnostics.clearDiagnostics();
+  const editor = vscode.window.activeTextEditor;
+  if (!editor) {
+    return;
+  }
+  const document = editor.document;
+  await textProcessor.processDocument({ document });
+
+  try {
+    let results = await spellCheckPromises();
+    if (results.length === 0 || !isEnableOnSave) {
+      vscode.window.showInformationMessage("No spelling errors found.");
+      return;
     }
-  });
+    results = results.filter(
+      (error) =>
+        !markCheckList.some(
+          (mark) => mark.word === error.word
+        )
+    );
+    if (results.length === 0) {
+      vscode.window.showInformationMessage("No spelling errors found.");
+      return;
+    }
+    Diagnostics.onShowDiagnostics(results, editor);
+    errorsResult = results;
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : "An error occurred while checking spelling.";
+    const isErrorNetwork = errorMessage.includes("NetworkError");
+    
+    if (!isErrorNetwork) {
+      vscode.window.showErrorMessage(errorMessage);
+    }
+  }
 }
 
 function listenerDocumentChanged() {
@@ -158,8 +179,11 @@ function listenerDocumentChanged() {
     }
 
     // Skip this logic if change was from an undo operation
-    if (e.contentChanges.length > 0 && e.reason === vscode.TextDocumentChangeReason.Undo) {
-      onShowDiagnostics(errorsResult, editor);
+    if (
+      e.contentChanges.length > 0 &&
+      e.reason === vscode.TextDocumentChangeReason.Undo
+    ) {
+      Diagnostics.onShowDiagnostics(errorsResult, editor);
       return;
     }
 
@@ -174,10 +198,26 @@ function listenerDocumentChanged() {
     );
 
     if (typeOnTheError) {
-      errorsResult = errorsResult.filter(error => error !== typeOnTheError);
-      onShowDiagnostics(errorsResult, editor);
+      errorsResult = errorsResult.filter((error) => error !== typeOnTheError);
+      Diagnostics.onShowDiagnostics(errorsResult, editor);
     }
   });
+}
+
+function listenerDocumentSaved(): vscode.Disposable {
+  if (!vscode.workspace.getConfiguration("longdo-spell").get("checkOnSave")) {
+    return { dispose: () => {} };
+  } else {
+    return vscode.workspace.onDidSaveTextDocument((document) => {
+      const editor = vscode.window.activeTextEditor;
+      if (!editor) {
+        return;
+      }
+      textProcessor.processDocument({ document }).then(() => {
+        onSpellCheck();
+      });
+    });
+  }
 }
 
 /**
@@ -239,7 +279,7 @@ export class Mistakes implements vscode.CodeActionProvider {
       fix.command = {
         title: "Replace",
         command: "longdo-spell.markCheck",
-        arguments: [error],
+        arguments: [error, false],
       };
       return fix;
     });
@@ -251,7 +291,7 @@ export class Mistakes implements vscode.CodeActionProvider {
     markAsCorrect.command = {
       title: "Mark as Correct",
       command: "longdo-spell.markCheck",
-      arguments: [error],
+      arguments: [error, true],
     };
 
     return [...fixes, markAsCorrect];
