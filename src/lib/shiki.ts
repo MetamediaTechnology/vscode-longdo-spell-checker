@@ -1,4 +1,5 @@
 import type { Highlighter, BundledLanguage } from 'shiki' with { 'resolution-mode': 'import' };
+import { languageMap } from '../interface/lang';
 
 class ShikiUtil {
     private highlighter: Highlighter | null = null;
@@ -6,8 +7,9 @@ class ShikiUtil {
     private async getHighlighter(): Promise<Highlighter> {
         if (!this.highlighter) {
             const { createHighlighter } = await import("shiki");
+
             this.highlighter = await createHighlighter({
-                langs: ["javascript", "typescript", "vue","html", "css", "json"],
+                langs: Object.entries(languageMap).map(([_, [lang]]) => lang),
                 themes: ["nord"],
             });
         }

@@ -87,7 +87,6 @@ export class TextProcessor {
       codeTokens.tokens.forEach((line: any[], lineIndex) => {
         this.processLineWithTokens(fileExtension, line, lineIndex);
       });
-      this.processWithThaiTextOnly(document);
       this.flushData();
       return this.textData;
     }
@@ -106,7 +105,6 @@ export class TextProcessor {
       ? langMapEntry[1] 
       : undefined;
     const thaiWordPattern = /[\u0E00-\u0E7F]+/g;
-    const MAX_BATCH_SIZE = 1024;
 
     if (!targetColors) {
       return;
@@ -125,26 +123,33 @@ export class TextProcessor {
         content.trim().length > 0 &&
         !content.match(thaiWordPattern)
       ) {
-        const start = linePosition;
-        const end = linePosition + content.length;
 
-        if (this.textToCheck.length + content.length + 1 > MAX_BATCH_SIZE) {
+        const trimmedDifference = content.length - content.trimStart().length;
+        const start = linePosition + trimmedDifference;
+        const trimmedContent = content.trim();
+        const end = start + trimmedContent.length;
+
+        if (this.textToCheck.length + trimmedContent.length + 1 > TextProcessor.MAX_TEXT_LENGTH) {
           this.flushData();
         }
+
+        // Calculate correct global positions
+        const globalStart = this.globalOffset;
+        const globalEnd = globalStart + trimmedContent.length;
 
         this.allIndices.push({
           line: lineIndex,
           start,
           end,
-          text: content,
-          globalStart: this.globalOffset,
-          globalEnd: this.globalOffset + content.length,
+          text: trimmedContent,
+          globalStart,
+          globalEnd,
         });
 
-        this.textToCheck += content + " ";
-        this.globalOffset += content.length + 1;
+        this.textToCheck += trimmedContent + " ";
+        this.globalOffset = globalEnd + 1; // Add 1 for the space
 
-        if (this.textToCheck.length >= MAX_BATCH_SIZE) {
+        if (this.textToCheck.length >= TextProcessor.MAX_TEXT_LENGTH) {
           this.flushData();
         }
       }
