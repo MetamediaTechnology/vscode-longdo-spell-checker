@@ -7,13 +7,13 @@ export class TextProcessor {
   private static readonly MAX_TEXT_LENGTH = 1000;
   private static readonly SUPPORTED_COLORS_BY_EXT: Record<string, string[]> = {
     ts: ["#81A1C1", "#D8DEE9FF"],
-    js: ["#81A1C1", "#D8DEE9FF"],
+    js: ["#A3BE8C"],
     py: ["#88C0D0", "#ECEFF4"],
     html: ["#EBCB8B", "#D8DEE9FF"],
-    css: ["#81A1C1", "#D8DEE9FF"],
+    css: ["#D8DEE9FF"],
     json: ["#A3BE8C"],
     vue: ["#D8DEE9FF"],
-    md: ["#81A1C1", "#D8DEE9FF"],
+    md: ["#D8DEE9FF"],
   };
   private textToCheck: string = "";
   private allIndices: TextIndex[] = [];
@@ -78,21 +78,29 @@ export class TextProcessor {
     const fileExtension =
       document.fileName.split(".").pop()?.toLowerCase() || "txt";
 
-    const codeLanguage = languageMap[fileExtension] || fileExtension;
-    const codeTokens = await shikiUtil.getCodeTokens(
-      document.getText(),
-      codeLanguage,
-      "nord"
-    );
-    codeTokens.tokens.forEach((line: any[], lineIndex) => {
-      this.processLineWithTokens(fileExtension, line, lineIndex);
-    });
-    this.processWithThaiTextOnly(document);
+    const isSupportedFile = languageMap[fileExtension];
 
-    this.flushData();
-    return this.textData;
+    if (!isSupportedFile) {
+      console.log("Unsupported file extension:", fileExtension);
+      this.processWithThaiTextOnly(document);
+      this.flushData();
+      return this.textData;
+    } else {
+      const codeLanguage = languageMap[fileExtension];
+      const language = Array.isArray(codeLanguage) ? codeLanguage[0] : codeLanguage;
+      const codeTokens = await shikiUtil.getCodeTokens(
+        document.getText(),
+        language,
+        "nord"
+      );
+      codeTokens.tokens.forEach((line: any[], lineIndex) => {
+        this.processLineWithTokens(fileExtension, line, lineIndex);
+      });
+      this.processWithThaiTextOnly(document);
+      this.flushData();
+      return this.textData;
+    }
   }
-
 
   /**
    * Process line with tokens
@@ -109,35 +117,39 @@ export class TextProcessor {
       console.log("Unsupported file extension:", fileExtension);
       return;
     }
-    const lines = line.map((token) => [
-      token.content,
-      token.color,
-    ]) as [string, string][];
-   
+    const lines = line.map((token) => [token.content, token.color]) as [
+      string,
+      string
+    ][];
+
     let nonTargetTextLength = 0;
     lines.forEach((token) => {
       const [content, color] = token;
       const isTargetColor = targetColors.includes(color);
-      if (isTargetColor && content.trim().length > 0 && !content.match(thaiWordPattern)) {
-      const start = nonTargetTextLength;
-      const end = nonTargetTextLength + content.length;
-      this.allIndices.push({
-        line: lineIndex,
-        start,
-        end,
-        text: content,
-        globalStart: this.globalOffset,
-        globalEnd: this.globalOffset + content.length,
-      });
+      if (
+        isTargetColor &&
+        content.trim().length > 0 &&
+        !content.match(thaiWordPattern)
+      ) {
+        const start = nonTargetTextLength;
+        const end = nonTargetTextLength + content.length;
+        this.allIndices.push({
+          line: lineIndex,
+          start,
+          end,
+          text: content,
+          globalStart: this.globalOffset,
+          globalEnd: this.globalOffset + content.length,
+        });
 
-      this.textToCheck += content + " ";
-      this.globalOffset += content.length + 1;
+        this.textToCheck += content + " ";
+        this.globalOffset += content.length + 1;
 
-      if (this.textToCheck.length >= TextProcessor.MAX_TEXT_LENGTH) {
-        this.flushData();
-      }
+        if (this.textToCheck.length >= TextProcessor.MAX_TEXT_LENGTH) {
+          this.flushData();
+        }
       } else {
-      nonTargetTextLength += content.length;
+        nonTargetTextLength += content.length;
       }
     });
   }

@@ -145,7 +145,7 @@ async function onSpellCheck() {
 
   try {
     let results = await spellCheckPromises();
-    if (results.length === 0 && !isEnableOnSave) {
+    if (results.length === 0 || !isEnableOnSave) {
       vscode.window.showInformationMessage("No spelling errors found.");
       return;
     }
