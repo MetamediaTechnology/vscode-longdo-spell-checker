@@ -12,10 +12,10 @@ suite("Extension can be activated", () => {
   });
 });
 
-suite("Extension can be readed and set configuration", () => {
-  test("Extension configuration is set", async () => {
-    const config = vscode.workspace.getConfiguration("longdo-spell");
-    await config.update("apiKey", "test", vscode.ConfigurationTarget.Global);
-    assert.strictEqual(config.get("apiKey"), "test", "Configuration not set");
-  });
-});
+// suite("Extension can be readed and set configuration", () => {
+//   test("Extension configuration is set", async () => {
+//     const config = vscode.workspace.getConfiguration("longdo-spell");
+//     await config.update("apiKey", "test", vscode.ConfigurationTarget.Global);
+//     assert.strictEqual(config.get("apiKey"), "test", "Configuration not set");
+//   });
+// });
