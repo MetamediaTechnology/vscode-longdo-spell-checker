@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { Position } from "./types";
+import { Position } from "./interface/types";
 
 let decorationType: vscode.TextEditorDecorationType | null = null;
 

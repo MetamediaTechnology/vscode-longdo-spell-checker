@@ -1,15 +1,21 @@
-import * as assert from 'assert';
+import * as assert from "assert";
+import * as vscode from "vscode";
 
-// You can import and use all API from the 'vscode' module
-// as well as import your extension to test it
-import * as vscode from 'vscode';
-// import * as myExtension from '../../extension';
-
-suite('Extension Test Suite', () => {
-	vscode.window.showInformationMessage('Start all tests.');
-
-	test('Sample test', () => {
-		assert.strictEqual(-1, [1, 2, 3].indexOf(5));
-		assert.strictEqual(-1, [1, 2, 3].indexOf(0));
-	});
+suite("Extension can be activated", () => {
+  test("Extension is activated", async () => {
+    const extension = vscode.extensions.getExtension(
+      "metamediatechnology.longdo-spell"
+    );
+    assert.ok(extension, "Extension not found");
+    await extension?.activate();
+    assert.ok(extension?.isActive, "Extension is not active");
+  });
 });
+
+// suite("Extension can be readed and set configuration", () => {
+//   test("Extension configuration is set", async () => {
+//     const config = vscode.workspace.getConfiguration("longdo-spell");
+//     await config.update("apiKey", "test", vscode.ConfigurationTarget.Global);
+//     assert.strictEqual(config.get("apiKey"), "test", "Configuration not set");
+//   });
+// });

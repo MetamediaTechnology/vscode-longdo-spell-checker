@@ -2,6 +2,10 @@
   "name": "longdo-spell",
   "displayName": "Longdo Spell Checker",
   "icon": "images/logo.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MetamediaTechnology/vscode-longdo-spell-checker.git"
+  },
   "pricing": "Free",
   "keywords": [
     "longdo",
@@ -14,8 +18,8 @@
     "thai-spell-check"
   ],
   "description": "Thai Spell Checker for Visual Studio Code",
-  "publisher": "Metamedia Technology",
-  "version": "0.1.4",
+  "publisher": "MetamediaTechnology",
+  "version": "0.2.0",
   "engines": {
     "vscode": "^1.80.0"
   },
@@ -57,6 +61,39 @@
           "type": "string",
           "default": "",
           "description": "Longdo Spell Checker Api Key"
+        },
+        "longdo-spell.checkOnSave": {
+          "type": "boolean",
+          "default": false,
+          "description": "Check spelling on save"
+        },
+        "longdo-spell.locale": {
+          "type": "string",
+          "enum": [
+            "Thai",
+            "English"
+          ],
+          "default": "Thai",
+          "description": "Set the primary language for spell checking"
+        },
+        "longdo-spell.language": {
+          "type": "array",
+          "default": [
+            "Thai"
+          ],
+          "items": {
+            "type": "string",
+            "enum": [
+              "Thai",
+              "English"
+            ]
+          },
+          "uniqueItems": true,
+          "contains": {
+            "const": "Thai"
+          },
+          "minItems": 1,
+          "description": "Languages to check spelling"
         }
       }
     },
@@ -91,7 +128,11 @@
     "@typescript-eslint/parser": "^8.17.0",
     "@vscode/test-cli": "^0.0.10",
     "@vscode/test-electron": "^2.4.1",
+    "@vscode/vsce": "^3.3.0",
     "eslint": "^9.16.0",
     "typescript": "^5.7.2"
+  },
+  "dependencies": {
+    "shiki": "^3.2.1"
   }
 }
