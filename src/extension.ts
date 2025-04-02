@@ -16,14 +16,17 @@ export function activate(context: vscode.ExtensionContext) {
 
   vscode.workspace.onDidChangeConfiguration((event) => {
     if (event.affectsConfiguration("longdo-spell.checkOnSave")) {
-      vscode.window.showInformationMessage(
-        "Longdo Spell Checker: Settings changed. Restart window for changes to take effect?",
-        "Restart", "Later"
-      ).then(selection => {
-        if (selection === "Restart") {
-          vscode.commands.executeCommand("workbench.action.reloadWindow");
-        }
-      });
+      vscode.window
+        .showInformationMessage(
+          "Longdo Spell Checker: Settings changed. Restart window for changes to take effect?",
+          "Restart",
+          "Later"
+        )
+        .then((selection) => {
+          if (selection === "Restart") {
+            vscode.commands.executeCommand("workbench.action.reloadWindow");
+          }
+        });
     }
   });
 
@@ -156,9 +159,13 @@ async function onSpellCheck() {
 
   try {
     let results = await spellCheckPromises();
-    if (results.length === 0 && !isEnableOnSave) {
-      vscode.window.showInformationMessage("No spelling errors found.");
-      return;
+    if (results.length === 0) {
+      if (isEnableOnSave) {
+        return;
+      } else {
+        vscode.window.showInformationMessage("No spelling errors found.");
+        return;
+      }
     }
     results = results.filter(
       (error) => !markCheckList.some((mark) => mark.word === error.word)
