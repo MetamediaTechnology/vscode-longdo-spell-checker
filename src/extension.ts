@@ -14,6 +14,19 @@ let isEnableOnSave = false;
 export function activate(context: vscode.ExtensionContext) {
   showStatusBar(context);
 
+  vscode.workspace.onDidChangeConfiguration((event) => {
+    if (event.affectsConfiguration("longdo-spell.checkOnSave")) {
+      vscode.window.showInformationMessage(
+        "Longdo Spell Checker: Settings changed. Restart window for changes to take effect?",
+        "Restart", "Later"
+      ).then(selection => {
+        if (selection === "Restart") {
+          vscode.commands.executeCommand("workbench.action.reloadWindow");
+        }
+      });
+    }
+  });
+
   context.subscriptions.push(
     vscode.languages.registerCodeActionsProvider(
       Configuration.languages,
@@ -33,16 +46,14 @@ export function activate(context: vscode.ExtensionContext) {
 
   const markCheck = vscode.commands.registerCommand(
     "longdo-spell.markCheck",
-    async (fixIndex: ErrorsResult, isAddToMark:boolean) => {
+    async (fixIndex: ErrorsResult, isAddToMark: boolean) => {
       const editor = vscode.window.activeTextEditor;
       if (!editor) {
         return;
       }
 
       if (!isAddToMark) {
-        errorsResult = errorsResult.filter(
-          (error) => error !== fixIndex
-        );
+        errorsResult = errorsResult.filter((error) => error !== fixIndex);
         Diagnostics.onShowDiagnostics(errorsResult, editor);
       } else {
         errorsResult = errorsResult.filter(
@@ -145,15 +156,12 @@ async function onSpellCheck() {
 
   try {
     let results = await spellCheckPromises();
-    if (results.length === 0 || !isEnableOnSave) {
+    if (results.length === 0 && !isEnableOnSave) {
       vscode.window.showInformationMessage("No spelling errors found.");
       return;
     }
     results = results.filter(
-      (error) =>
-        !markCheckList.some(
-          (mark) => mark.word === error.word
-        )
+      (error) => !markCheckList.some((mark) => mark.word === error.word)
     );
     if (results.length === 0) {
       vscode.window.showInformationMessage("No spelling errors found.");
@@ -162,9 +170,12 @@ async function onSpellCheck() {
     Diagnostics.onShowDiagnostics(results, editor);
     errorsResult = results;
   } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : "An error occurred while checking spelling.";
+    const errorMessage =
+      error instanceof Error
+        ? error.message
+        : "An error occurred while checking spelling.";
     const isErrorNetwork = errorMessage.includes("NetworkError");
-    
+
     if (!isErrorNetwork) {
       vscode.window.showErrorMessage(errorMessage);
     }
@@ -313,4 +324,8 @@ export class Mistakes implements vscode.CodeActionProvider {
   }
 }
 
-export function deactivate() {}
+export function deactivate() {
+  errorsResult = [];
+  markCheckList = [];
+  Diagnostics.clearDiagnostics();
+}
