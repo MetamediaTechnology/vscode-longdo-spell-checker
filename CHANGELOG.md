@@ -5,6 +5,9 @@ All notable changes to the "longdo-spell" extension will be documented in this f
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
 ## [Unreleased]
+### [0.2.1] : 02/04/2568
+- fix:Supports english spelling for  js, markdown file
+- fix:Bugs Error spelling when disable on save.
 
 ### [0.2.0] : 24/03/2568
 - reflector(text): remember marked the words and remove highlights all of the word until restart vscode
