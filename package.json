@@ -1,6 +1,6 @@
 {
   "name": "longdo-spell",
-  "displayName": "Longdo Spell Checker",
+  "displayName": "Spell Checker by Longdo",
   "icon": "images/logo.png",
   "repository": {
     "type": "git",
@@ -11,15 +11,15 @@
     "longdo",
     "spell",
     "checker",
-    "thai",
+    "Thai spelling",
     "language",
-    "thai-spell",
-    "thai-spell-checker",
-    "thai-spell-check"
+    "Thai spell",
+    "Thai-spell-checker",
+    "Thai-spell-check"
   ],
   "description": "Thai Spell Checker for Visual Studio Code",
   "publisher": "MetamediaTechnology",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "engines": {
     "vscode": "^1.80.0"
   },
