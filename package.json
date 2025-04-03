@@ -17,9 +17,9 @@
     "Thai-spell-checker",
     "Thai-spell-check"
   ],
-  "description": "Fast and intelligent multilingual spell checker (current supports English and Thai) from Longdo Dict online dictionary service.",
+  "description": "Thai/English Spell Checker: A fast and intelligent multilingual spell checker from Longdo Dict online dictionary service.",
   "publisher": "MetamediaTechnology",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "engines": {
     "vscode": "^1.80.0"
   },

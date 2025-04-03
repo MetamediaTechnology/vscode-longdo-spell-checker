@@ -5,17 +5,19 @@ All notable changes to the "longdo-spell" extension will be documented in this f
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
 ## [Released]
+### [0.2.4] : 03/04/2568
+- fix: Fixed position calculation when emoji appears at the beginning of text.
+- chore: Updated logo for a more modern look and feel
 
-### [0.2.3] : 03/04/2567
+### [0.2.3] : 03/04/2568
 - fix: Fixed Thai spell checking being applied to English-focused files like JS and Markdown
 
-### [0.2.2] : 03/04/2567
+### [0.2.2] : 03/04/2568
 - fix: Fixed incorrect cursor position when spaces exist at the beginning of lines 
 - refactor: Simplified code by standardizing configuration usage across components
 - fix(text): fix incorrect index of the word is emoji :3 
 
 ## [Unreleased]
-
 ### [0.2.1] : 02/04/2568
 - fix:Supports English spelling for  JS, Markdown file
 - fix:Bugs Error spelling when disable on save.
