@@ -67,7 +67,7 @@ Once installed, you’ll see **Longdo Spell** in the **status bar (bottom right)
 | Language | Support Level              |
 |----------|----------------------------|
 | 🇹🇭 Thai  | ✅ Full Support            |
-| 🇬🇧 English | Only md json javascript |
+| 🇬🇧 English |Only md json javascript |
 
 ---
 
