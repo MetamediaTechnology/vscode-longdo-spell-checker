@@ -64,10 +64,10 @@ Once installed, you’ll see **Longdo Spell** in the **status bar (bottom right)
 
 ## 🌏 Language Support  
 
-| Language | Support Level |
-|----------|--------------|
-| 🇹🇭 Thai  | ✅ Full Support |
-| 🇬🇧 English | ❌ None |
+| Language | Support Level              |
+|----------|----------------------------|
+| 🇹🇭 Thai  | ✅ Full Support            |
+| 🇬🇧 English | Only md json javascript |
 
 ---
 

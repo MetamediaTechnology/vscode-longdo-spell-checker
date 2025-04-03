@@ -4,13 +4,16 @@ All notable changes to the "longdo-spell" extension will be documented in this f
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
-## [Unreleased]
-### [0.2.2] : 02/04/2567
+## [Released]
+### [0.2.2] : 03/04/2567
 - fix: Fixed incorrect cursor position when spaces exist at the beginning of lines 
 - refactor: Simplified code by standardizing configuration usage across components
+- fix(text): fix incorrect index of the word is emoji :3 
+
+## [Unreleased]
 
 ### [0.2.1] : 02/04/2568
-- fix:Supports English spelling for  js, markdown file
+- fix:Supports English spelling for  JS, Markdown file
 - fix:Bugs Error spelling when disable on save.
 
 ### [0.2.0] : 24/03/2568
