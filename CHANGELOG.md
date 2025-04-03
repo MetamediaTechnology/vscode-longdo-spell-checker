@@ -5,6 +5,10 @@ All notable changes to the "longdo-spell" extension will be documented in this f
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
 ## [Released]
+
+### [0.2.3] : 03/04/2567
+- fix: Fixed Thai spell checking being applied to English-focused files like JS and Markdown
+
 ### [0.2.2] : 03/04/2567
 - fix: Fixed incorrect cursor position when spaces exist at the beginning of lines 
 - refactor: Simplified code by standardizing configuration usage across components
