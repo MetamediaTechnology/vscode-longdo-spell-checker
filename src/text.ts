@@ -124,7 +124,7 @@ export class TextProcessor {
         content.trim().length > 0 &&
         !content.match(thaiWordPattern)
       ) {
-        // แก้ไขการนับความยาวของ string ให้ถูกต้องของ emoji
+        // Get grapheme clusters (including emojis) instead of code points
         const visualLength = (str: string) => 
           [...str].length;
           
@@ -138,14 +138,14 @@ export class TextProcessor {
         };
           
         const trimmedContent = content.trim();
-        const trimmedStartLength = visualLength(content) - visualLength(visualTrimStart(content));
-        const start = linePosition + trimmedStartLength;
+        const leadingWhitespace = content.length - visualTrimStart(content).length;
+        const start = linePosition + leadingWhitespace;
         const end = start + visualLength(trimmedContent);
 
         if (this.textToCheck.length + trimmedContent.length + 1 > TextProcessor.MAX_TEXT_LENGTH) {
           this.flushData();
         }
- 
+
         const globalStart = this.globalOffset;
         const globalEnd = globalStart + visualLength(trimmedContent);
 
@@ -165,7 +165,7 @@ export class TextProcessor {
           this.flushData();
         }
       }
-      linePosition += [...content].length; // Account for emoji length correctly
+      linePosition += content.length; // Use actual string length for position tracking
     });
   }
 
