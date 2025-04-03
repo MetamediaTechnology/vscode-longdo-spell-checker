@@ -123,19 +123,30 @@ export class TextProcessor {
         content.trim().length > 0 &&
         !content.match(thaiWordPattern)
       ) {
-
-        const trimmedDifference = content.length - content.trimStart().length;
-        const start = linePosition + trimmedDifference;
+        // แก้ไขการนับความยาวของ string ให้ถูกต้องของ emoji
+        const visualLength = (str: string) => 
+          [...str].length;
+          
+        const visualTrimStart = (str: string) => {
+          const chars = [...str];
+          let i = 0;
+          while (i < chars.length && chars[i].trim() === '') {
+            i++;
+          }
+          return chars.slice(i).join('');
+        };
+          
         const trimmedContent = content.trim();
-        const end = start + trimmedContent.length;
+        const trimmedStartLength = visualLength(content) - visualLength(visualTrimStart(content));
+        const start = linePosition + trimmedStartLength;
+        const end = start + visualLength(trimmedContent);
 
         if (this.textToCheck.length + trimmedContent.length + 1 > TextProcessor.MAX_TEXT_LENGTH) {
           this.flushData();
         }
-
-        // Calculate correct global positions
+ 
         const globalStart = this.globalOffset;
-        const globalEnd = globalStart + trimmedContent.length;
+        const globalEnd = globalStart + visualLength(trimmedContent);
 
         this.allIndices.push({
           line: lineIndex,
@@ -153,7 +164,7 @@ export class TextProcessor {
           this.flushData();
         }
       }
-      linePosition += content.length;
+      linePosition += [...content].length; // Account for emoji length correctly
     });
   }
 
