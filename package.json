@@ -17,7 +17,7 @@
     "Thai-spell-checker",
     "Thai-spell-check"
   ],
-  "description": "Thai Spell Checker for Visual Studio Code",
+  "description": "Fast and intelligent multilingual spell checker (current supports English and Thai) from Longdo Dict online dictionary service.",
   "publisher": "MetamediaTechnology",
   "version": "0.2.3",
   "engines": {
