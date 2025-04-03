@@ -87,6 +87,7 @@ export class TextProcessor {
       codeTokens.tokens.forEach((line: any[], lineIndex) => {
         this.processLineWithTokens(fileExtension, line, lineIndex);
       });
+      this.processWithThaiTextOnly(document);
       this.flushData();
       return this.textData;
     }
