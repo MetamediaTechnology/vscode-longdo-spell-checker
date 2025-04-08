@@ -1,10 +1,18 @@
 # Change Log
 
-All notable changes to the "longdo-spell" extension will be documented in this file.
+All notable changes to the "longdo-spell-checker" extension will be documented in this file.
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
 ## [Released]
+### [0.2.6] : 08/04/2668
+- feat: Added option to enable/disable English spell checking
+- fix: Corrected language detection for mixed content files
+- improve: Enhanced spell checking performance for multilingual documents
+- fix: Changed extension reference from "longdo-spell" to "longdo-spell-checker" for consistency
+- docs: Updated documentation to reflect correct extension name throughout
+
+
 ### [0.2.5] : 08/04/2568
 - feat: Added ability to switch display language
 - feat: Added rule to exclude specific JavaScript syntax from spell checking

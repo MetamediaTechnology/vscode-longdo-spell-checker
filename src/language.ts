@@ -33,7 +33,7 @@ export class Language {
    */
   public switchLanguage() {
     const currentLanguage =
-      vscode.workspace.getConfiguration("longdo-spell").get("locale") ?? "en";
+      vscode.workspace.getConfiguration("longdo-spell-checker").get("locale") ?? "en";
     const newLanguage = currentLanguage === "en" ? "fr" : "en";
     vscode.workspace
       .getConfiguration("longdo-spell")
@@ -44,7 +44,7 @@ export class Language {
    * Returns the language of the current editor
    */
   public getLanguage(): string {
-    const locale = vscode.workspace.getConfiguration("longdo-spell").get("locale") as string;
+    const locale = vscode.workspace.getConfiguration("longdo-spell-checker").get("locale") as string;
     return locale === "Thai" ? "th" : "en";
   }
 
@@ -65,9 +65,16 @@ export class Language {
   private loadLanguage(): Record<string, string> | null {
     try {
       const language = this.getLanguage();
+      // Get extension path instead of using __dirname
+      const extensionPath = vscode.extensions.getExtension("metamediatechnology.longdo-spell-checker")?.extensionPath;
+      
+      if (!extensionPath) {
+        console.error("Extension path not found");
+        return null;
+      }
+      
       const languageFilePath = path.join(
-        __dirname,
-        "..",
+        extensionPath,
         "src",
         "i18n",
         `${language}.json`

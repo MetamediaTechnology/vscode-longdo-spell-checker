@@ -4,7 +4,7 @@ import * as vscode from "vscode";
 suite("Extension can be activated", () => {
   test("Extension is activated", async () => {
     const extension = vscode.extensions.getExtension(
-      "metamediatechnology.longdo-spell"
+      "metamediatechnology.longdo-spell-checker"
     );
     assert.ok(extension, "Extension not found");
     await extension?.activate();

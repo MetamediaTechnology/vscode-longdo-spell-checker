@@ -1,5 +1,5 @@
 {
-  "name": "longdo-spell",
+  "name": "longdo-spell-checker",
   "displayName": "Spell Checker by Longdo",
   "icon": "images/logo.png",
   "tag": [
@@ -26,11 +26,14 @@
     "language",
     "Thai spell",
     "Thai-spell-checker",
-    "Thai-spell-check"
+    "Thai-spell-check",
+    "ไทย",
+    "ตรวจสอบการสะกดคำ",
+    "ตรวจสอบการสะกดคำภาษาไทย"
   ],
   "description": "Thai/English Spell Checker: A fast and intelligent multilingual spell checker from Longdo Dict online dictionary service.",
   "publisher": "MetamediaTechnology",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "engines": {
     "vscode": "^1.80.0"
   },
@@ -68,17 +71,17 @@
     "configuration": {
       "title": "Longdo Spell",
       "properties": {
-        "longdo-spell.apiKey": {
+        "longdo-spell-checker.apiKey": {
           "type": "string",
           "default": "",
           "description": "Longdo Spell Checker Api Key"
         },
-        "longdo-spell.checkOnSave": {
+        "longdo-spell-checker.checkOnSave": {
           "type": "boolean",
           "default": false,
           "description": "Check spelling on save"
         },
-        "longdo-spell.locale": {
+        "longdo-spell-checker.locale": {
           "type": "string",
           "enum": [
             "Thai",
@@ -87,10 +90,11 @@
           "default": "Thai",
           "description": "Set the primary language for spell checking"
         },
-        "longdo-spell.language": {
+        "longdo-spell-checker.language": {
           "type": "array",
           "default": [
-            "Thai"
+            "Thai",
+            "English"
           ],
           "items": {
             "type": "string",
@@ -110,16 +114,19 @@
     },
     "commands": [
       {
-        "command": "longdo-spell.spell",
+        "command": "longdo-spell-checker.spell",
         "title": "Longdo Spell Checker: Check Spelling (Current Tab)"
       },
       {
-        "command": "longdo-spell.clear",
+        "command": "longdo-spell-checker.clear",
         "title": "Longdo Spell Checker: Clear All Errors (Current Tab)"
       },
       {
-        "command": "longdo-spell.openSetKey",
+        "command": "longdo-spell-checker.openSetKey",
         "title": "Longdo Spell Checker: Set API Key"
+      },{
+        "command": "longdo-spell-checker.openWebConsole",
+        "title": "Longdo Spell Checker: Open API Web Console"
       }
     ]
   },
