@@ -71,17 +71,17 @@
     "configuration": {
       "title": "Longdo Spell",
       "properties": {
-        "longdo-spell.apiKey": {
+        "longdo-spell-checker.apiKey": {
           "type": "string",
           "default": "",
           "description": "Longdo Spell Checker Api Key"
         },
-        "longdo-spell.checkOnSave": {
+        "longdo-spell-checker.checkOnSave": {
           "type": "boolean",
           "default": false,
           "description": "Check spelling on save"
         },
-        "longdo-spell.locale": {
+        "longdo-spell-checker.locale": {
           "type": "string",
           "enum": [
             "Thai",
@@ -90,10 +90,11 @@
           "default": "Thai",
           "description": "Set the primary language for spell checking"
         },
-        "longdo-spell.language": {
+        "longdo-spell-checker.language": {
           "type": "array",
           "default": [
-            "Thai"
+            "Thai",
+            "English"
           ],
           "items": {
             "type": "string",
@@ -113,16 +114,19 @@
     },
     "commands": [
       {
-        "command": "longdo-spell.spell",
+        "command": "longdo-spell-checker.spell",
         "title": "Longdo Spell Checker: Check Spelling (Current Tab)"
       },
       {
-        "command": "longdo-spell.clear",
+        "command": "longdo-spell-checker.clear",
         "title": "Longdo Spell Checker: Clear All Errors (Current Tab)"
       },
       {
-        "command": "longdo-spell.openSetKey",
+        "command": "longdo-spell-checker.openSetKey",
         "title": "Longdo Spell Checker: Set API Key"
+      },{
+        "command": "longdo-spell-checker.openWebConsole",
+        "title": "Longdo Spell Checker: Open API Web Console"
       }
     ]
   },
