@@ -2,6 +2,17 @@
   "name": "longdo-spell",
   "displayName": "Spell Checker by Longdo",
   "icon": "images/logo.png",
+  "tag": [
+    "spell",
+    "checker",
+    "longdo",
+    "longdo-spell-checker",
+    "longdo-spell-check",
+    "longdo-spell",
+    "Thai-spell-checker",
+    "Thai-spell-check",
+    "Thai-spell"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/MetamediaTechnology/vscode-longdo-spell-checker.git"
@@ -19,7 +30,7 @@
   ],
   "description": "Thai/English Spell Checker: A fast and intelligent multilingual spell checker from Longdo Dict online dictionary service.",
   "publisher": "MetamediaTechnology",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "engines": {
     "vscode": "^1.80.0"
   },
