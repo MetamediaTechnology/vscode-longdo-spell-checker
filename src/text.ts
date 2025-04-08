@@ -66,33 +66,39 @@ export class TextProcessor {
   }): Promise<{ text: string; indices: TextIndex[] }[]> {
     this.resetState();
 
-    // When unknow file extenstion, assume it's a text file 555
-    const fileExtension =
+    const fileExtension = 
       document.fileName.split(".").pop()?.toLowerCase() || "txt";
-
-    const isSupportedFile = languageMap[fileExtension];
-
-    if (!isSupportedFile) {
-      this.processWithThaiTextOnly(document);
-      this.flushData();
-      return this.textData;
-    } else {
-      const codeLanguage = languageMap[fileExtension];
-      const language = Array.isArray(codeLanguage)
-        ? codeLanguage[0]
-        : codeLanguage;
-      const codeTokens = await shikiUtil.getCodeTokens(
-        document.getText(),
-        language,
-        "nord"
-      );
-      codeTokens.tokens.forEach((line: any[], lineIndex) => {
-        this.processLineWithTokens(fileExtension, line, lineIndex);
-      });
+    const isSupportedFile = fileExtension in languageMap;
+    
+    const config = vscode.workspace.getConfiguration("longdo-spell-checker");
+    const languages = config.get<string[]>("language") || [];
+    const isEnglishEnabled = languages.includes("English");
+    
+    // Process Thai text for unsupported files or when English is disabled
+    if (!isSupportedFile || !isEnglishEnabled) {
       this.processWithThaiTextOnly(document);
       this.flushData();
       return this.textData;
     }
+    
+    // Process code with language-specific highlighting
+    const codeLanguage = languageMap[fileExtension];
+    const language = Array.isArray(codeLanguage) ? codeLanguage[0] : codeLanguage;
+    
+    const codeTokens = await shikiUtil.getCodeTokens(
+      document.getText(),
+      language,
+      "nord"
+    );
+    
+    codeTokens.tokens.forEach((line: any[], lineIndex) => {
+      this.processLineWithTokens(fileExtension, line, lineIndex);
+    });
+    
+    // Also process Thai text in supported files
+    this.processWithThaiTextOnly(document);
+    this.flushData();
+    return this.textData;
   }
 
   /**
@@ -123,6 +129,11 @@ export class TextProcessor {
       case "js":
       case "ts":
         if (isImportJavascript(lineText)) {
+          return;
+        }
+        break;
+      case "md":
+        if (StringUtils.markdownLink(lineText)) {
           return;
         }
         break;
