@@ -1,5 +1,5 @@
 {
-  "name": "longdo-spell",
+  "name": "longdo-spell-checker",
   "displayName": "Spell Checker by Longdo",
   "icon": "images/logo.png",
   "tag": [
@@ -26,11 +26,14 @@
     "language",
     "Thai spell",
     "Thai-spell-checker",
-    "Thai-spell-check"
+    "Thai-spell-check",
+    "ไทย",
+    "ตรวจสอบการสะกดคำ",
+    "ตรวจสอบการสะกดคำภาษาไทย"
   ],
   "description": "Thai/English Spell Checker: A fast and intelligent multilingual spell checker from Longdo Dict online dictionary service.",
   "publisher": "MetamediaTechnology",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "engines": {
     "vscode": "^1.80.0"
   },
