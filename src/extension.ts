@@ -15,7 +15,7 @@ export function activate(context: vscode.ExtensionContext) {
   showStatusBar(context);
 
   vscode.workspace.onDidChangeConfiguration((event) => {
-    if (event.affectsConfiguration("longdo-spell.checkOnSave")) {
+    if (event.affectsConfiguration("longdo-spell-checker.checkOnSave")) {
       vscode.window
         .showInformationMessage(
           "Longdo Spell Checker: Settings changed. Restart window for changes to take effect?",
@@ -47,8 +47,23 @@ export function activate(context: vscode.ExtensionContext) {
     }
   );
 
+  const openWebConsole = vscode.commands.registerCommand(
+    Command.openWebAPI,
+    async () => {
+      const url = "https://map.longdo.com/console";
+      try {
+          vscode.env.openExternal(vscode.Uri.parse(url));
+      } catch (error) {
+          console.error("Failed to open URL:", error);
+          vscode.window.showErrorMessage(
+            "Failed to open Longdo Web Console. Please check your internet connection."
+          );
+      }
+    }
+  );
+
   const markCheck = vscode.commands.registerCommand(
-    "longdo-spell.markCheck",
+    "longdo-spell-checker.markCheck",
     async (fixIndex: ErrorsResult, isAddToMark: boolean) => {
       const editor = vscode.window.activeTextEditor;
       if (!editor) {
@@ -86,7 +101,7 @@ export function activate(context: vscode.ExtensionContext) {
       });
 
       if (apiKey) {
-        const config = vscode.workspace.getConfiguration("longdo-spell");
+        const config = vscode.workspace.getConfiguration("longdo-spell-checker");
         try {
           await config.update(
             "apiKey",
@@ -135,9 +150,10 @@ export function activate(context: vscode.ExtensionContext) {
   );
 
   isEnableOnSave = vscode.workspace
-    .getConfiguration("longdo-spell")
+    .getConfiguration("longdo-spell-checker")
     .get("checkOnSave", false);
 
+  context.subscriptions.push(openWebConsole);
   context.subscriptions.push(disposable);
   context.subscriptions.push(clearCommand);
   context.subscriptions.push(openSetApiKey);
@@ -295,7 +311,7 @@ export class Mistakes implements vscode.CodeActionProvider {
       fix.isPreferred = true;
       fix.command = {
         title: "Replace",
-        command: "longdo-spell.markCheck",
+        command: "longdo-spell-checker.markCheck",
         arguments: [error, false],
       };
       return fix;
@@ -307,7 +323,7 @@ export class Mistakes implements vscode.CodeActionProvider {
     );
     markAsCorrect.command = {
       title: "Mark as Correct",
-      command: "longdo-spell.markCheck",
+      command: "longdo-spell-checker.markCheck",
       arguments: [error, true],
     };
 
