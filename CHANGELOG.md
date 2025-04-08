@@ -5,6 +5,10 @@ All notable changes to the "longdo-spell" extension will be documented in this f
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
 ## [Released]
+### [0.2.5] : 08/04/2568
+- feat: Added ability to switch display language
+- feat: Added rule to exclude specific JavaScript syntax from spell checking
+
 ### [0.2.4] : 03/04/2568
 - fix: Fixed position calculation when emoji appears at the beginning of text.
 - chore: Updated logo for a more modern look and feel

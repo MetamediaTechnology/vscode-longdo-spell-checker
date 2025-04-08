@@ -59,15 +59,16 @@ Once installed, you’ll see **Longdo Spell** in the **status bar (bottom right)
 ✅ **Quick fix for spelling errors**  
 ✅ **Supports multiple file types**  
 ✅ **Customizable settings**  
+✅ **Add dictionary**
 
 ---
 
 ## 🌏 Language Support  
 
-| Language | Support Level              |
-|----------|----------------------------|
-| 🇹🇭 Thai  | ✅ Full Support            |
-| 🇬🇧 English |Only md json javascript |
+| Language | Support Level                |
+|----------|------------------------------|
+| 🇹🇭 Thai  | ✅ Full Support              |
+| 🇬🇧 English | JSON, Markdown, Javascript |
 
 ---
 
