@@ -2,6 +2,8 @@ import { Position, ShikiLine, TextIndex } from "./interface/types";
 import * as vscode from "vscode";
 import { shikiUtil } from "./lib/shiki";
 import { languageMap } from "./interface/lang";
+import { StringUtils } from "./utils/strings";
+import { isImportJavascript } from "./rule/js";
 // Use a class instead of global variables
 export class TextProcessor {
   private static readonly MAX_TEXT_LENGTH = 1000;
@@ -105,7 +107,6 @@ export class TextProcessor {
     const targetColors = Array.isArray(langMapEntry) && langMapEntry.length > 1 
       ? langMapEntry[1] 
       : undefined;
-    const thaiWordPattern = /[\u0E00-\u0E7F]+/g;
 
     if (!targetColors) {
       return;
@@ -115,6 +116,18 @@ export class TextProcessor {
       string
     ][];
 
+
+    const lineText = lines.map((token) => token[0]).join("");
+    
+    switch (fileExtension) {
+      case "js":
+      case "ts":
+        if (isImportJavascript(lineText)) {
+          return;
+        }
+        break;
+    }
+
     let linePosition = 0;
     lines.forEach((token) => {
       const [content, color] = token;
@@ -122,7 +135,7 @@ export class TextProcessor {
       if (
         isTargetColor &&
         content.trim().length > 0 &&
-        !content.match(thaiWordPattern)
+        !StringUtils.containsThai(content)
       ) {
         // Get grapheme clusters (including emojis) instead of code points
         const visualLength = (str: string) => 
