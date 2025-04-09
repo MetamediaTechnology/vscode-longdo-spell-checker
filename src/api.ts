@@ -39,7 +39,7 @@ async function postProof(text: string) {
       },
       body: JSON.stringify({
         text,
-        key: vscode.workspace.getConfiguration("longdo-spell").get("apiKey"),
+        key: vscode.workspace.getConfiguration("longdo-spell-checker").get("apiKey"),
       }),
     });
 

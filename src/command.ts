@@ -5,30 +5,37 @@ export enum Command {
   /**
    * Command to check spelling in the current document.
    */
-  CheckSpelling = "longdo-spell.spell",
+  CheckSpelling = "longdo-spell-checker.spell",
 
   /**
    * Command to clear spelling decorations in the current document.
    */
-  ClearSpell = "longdo-spell.clear",
+  ClearSpell = "longdo-spell-checker.clear",
 
   /**
    * Command to open the set key
    */
 
-  OpenSetKey = "longdo-spell.openSetKey",
+  OpenSetKey = "longdo-spell-checker.openSetKey",
 
   /**
    * Command to open the set key.
    */
-  SetAPIKey = "longdo-spell.setKey",
+  SetAPIKey = "longdo-spell-checker.setKey",
 
   /**
    *
    * Command to open the settings UI.
    *
    */
-  openSettingUI = "longdo-spell.openSettings",
+  openSettingUI = "longdo-spell-checker.openSettings",
+
+  /**
+   * 
+   * Command to open the web api page.
+   * 
+   */
+  openWebAPI = "longdo-spell-checker.openWebConsole",
 
   /**
    * 
@@ -36,6 +43,5 @@ export enum Command {
    * Command to show quick pick for select command.
    * 
    */
-
-  showQuickPick = "longdo-spell.showQuickPick",
+  showQuickPick = "longdo-spell-checker.showQuickPick",
 }
