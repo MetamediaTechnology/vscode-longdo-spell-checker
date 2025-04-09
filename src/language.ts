@@ -36,7 +36,7 @@ export class Language {
       vscode.workspace.getConfiguration("longdo-spell-checker").get("locale") ?? "en";
     const newLanguage = currentLanguage === "en" ? "fr" : "en";
     vscode.workspace
-      .getConfiguration("longdo-spell")
+      .getConfiguration("longdo-spell-checker")
       .update("locale", newLanguage, vscode.ConfigurationTarget.Global);
   }
 
