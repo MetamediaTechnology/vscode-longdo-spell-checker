@@ -35,7 +35,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 - fix:Bugs Error spelling when disable on save.
 
 ### [0.2.0] : 24/03/2568
-- reflector(text): remember marked the words and remove highlights all of the word until restart vscode
+- refactor(text): remember marked the words and remove highlights all of the word until restart vscode
 - feat: add English word checking support (excluding grammar)
 - chore: improve offline mode behavior
 - Suppress notification boxes when in offline mode.
@@ -72,7 +72,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ### [0.1.0] : 05/03/2568
  - feat: Quick fix for replace of the word is spell errors.
- - chore: Reflector code.
+ - chore: refactor code.
  - fix: Highlighted and recommend
  
 ### [0.0.1]
