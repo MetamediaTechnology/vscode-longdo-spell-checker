@@ -36,17 +36,6 @@
   "activationEvents": [
     "onStartupFinished"
   ],
-  "tag": [
-    "spell",
-    "checker",
-    "longdo",
-    "longdo-spell-checker",
-    "longdo-spell-check",
-    "longdo-spell",
-    "Thai-spell-checker",
-    "Thai-spell-check",
-    "Thai-spell"
-  ],
   "main": "./out/extension.js",
   "contributes": {
     "configuration": {
@@ -105,22 +94,24 @@
       {
         "command": "longdo-spell-checker.openSetKey",
         "title": "Longdo Spell Checker: Set API Key"
-      },{
+      },
+      {
         "command": "longdo-spell-checker.openWebConsole",
         "title": "Longdo Spell Checker: Open API Web Console"
       }
     ]
   },
   "scripts": {
-    "vscode:prepublish": "npm run esbuild-base -- --minify",
-    "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/extension.js --external:vscode --format=cjs --platform=node",
-    "compile": "npm run esbuild-base -- --sourcemap",
-    "watch": "npm run esbuild-base -- --sourcemap --watch",
+    "vscode:prepublish": "npm run compile",
+    "package": "vsce package",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src",
     "test": "vscode-test"
   },
   "devDependencies": {
+    "vsce": "^2.15.0",
     "@types/mocha": "^10.0.10",
     "@types/node": "20.x",
     "@types/vscode": "^1.80.0",
