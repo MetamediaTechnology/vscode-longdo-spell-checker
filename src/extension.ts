@@ -94,8 +94,23 @@ export function activate(context: vscode.ExtensionContext) {
   const openSetApiKey = vscode.commands.registerCommand(
     Command.OpenSetKey,
     async () => {
+      const currentAPIKey = vscode.workspace
+        .getConfiguration("longdo-spell-checker")
+        .get("apiKey") as string;
+      if (currentAPIKey) {
+        const confirm = await vscode.window.showInformationMessage(
+          "Current API key is already set. Do you want to change it?",
+          { modal: true },
+          "Yes",
+          "No"
+        );
+        if (confirm !== "Yes") {
+          return;
+        }
+      }
       const apiKey = await vscode.window.showInputBox({
         placeHolder: "Enter your Longdo API key",
+        value: currentAPIKey,
         prompt: "Please enter your API key for Longdo Spell Checker",
         ignoreFocusOut: true,
       });
@@ -146,6 +161,9 @@ export function activate(context: vscode.ExtensionContext) {
       }
       if (options[2] === selected) {
         vscode.commands.executeCommand(Command.OpenSetKey);
+      }
+      if (options[3] === selected) {
+        vscode.commands.executeCommand(Command.openWebAPI);
       }
     }
   );
