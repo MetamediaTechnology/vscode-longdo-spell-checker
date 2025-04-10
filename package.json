@@ -2,17 +2,6 @@
   "name": "longdo-spell-checker",
   "displayName": "Spell Checker by Longdo",
   "icon": "images/logo.png",
-  "tag": [
-    "spell",
-    "checker",
-    "longdo",
-    "longdo-spell-checker",
-    "longdo-spell-check",
-    "longdo-spell",
-    "Thai-spell-checker",
-    "Thai-spell-check",
-    "Thai-spell"
-  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/MetamediaTechnology/vscode-longdo-spell-checker.git"
@@ -45,28 +34,18 @@
     "Other"
   ],
   "activationEvents": [
-    "onLanguage:markdown",
-    "onLanguage:vue",
-    "onLanguage:javascript",
-    "onLanguage:typescript",
-    "onLanguage:php",
-    "onLanguage:python",
-    "onLanguage:go",
-    "onLanguage:html",
-    "onLanguage:css",
-    "onLanguage:json",
-    "onLanguage:dart",
-    "onLanguage:ruby",
-    "onLanguage:java",
-    "onLanguage:c",
-    "onLanguage:cpp",
-    "onLanguage:csharp",
-    "onLanguage:xml",
-    "onLanguage:yaml",
-    "onLanguage:plaintext",
-    "onLanguage:shellscript",
-    "onLanguage:sql",
-    "onLanguage:rust"
+    "onStartupFinished"
+  ],
+  "tag": [
+    "spell",
+    "checker",
+    "longdo",
+    "longdo-spell-checker",
+    "longdo-spell-check",
+    "longdo-spell",
+    "Thai-spell-checker",
+    "Thai-spell-check",
+    "Thai-spell"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -133,9 +112,10 @@
     ]
   },
   "scripts": {
-    "vscode:prepublish": "npm run compile",
-    "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./",
+    "vscode:prepublish": "npm run esbuild-base -- --minify",
+    "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/extension.js --external:vscode --format=cjs --platform=node",
+    "compile": "npm run esbuild-base -- --sourcemap",
+    "watch": "npm run esbuild-base -- --sourcemap --watch",
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src",
     "test": "vscode-test"
