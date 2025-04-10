@@ -129,6 +129,7 @@ export function activate(context: vscode.ExtensionContext) {
         "Longdo Spell Checker: Check Spelling (Current Tab)",
         "Longdo Spell Checker: Clear All Errors (Current Tab)",
         "Longdo Spell Checker: Set API Key",
+        "Longdo Spell Checker: Open Web Console",
       ];
       const selected = await vscode.window.showQuickPick(options, {
         placeHolder: "Select an action",
@@ -199,7 +200,9 @@ async function onSpellCheck() {
         : "An error occurred while checking spelling.";
     const isErrorNetwork = errorMessage.includes("NetworkError");
 
-    if (!isErrorNetwork) {
+    const errorApiKeyEmpty = errorMessage.includes("API key is not set");
+
+    if (!isErrorNetwork && !errorApiKeyEmpty) {
       vscode.window.showErrorMessage(errorMessage);
     }
   }
