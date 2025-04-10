@@ -31,6 +31,11 @@ async function postProof(text: string) {
     if (!isConnected) {
       throw new Error("NetworkError");
     }
+
+    const apiKey = vscode.workspace.getConfiguration("longdo-spell-checker").get("apiKey");
+    if (!apiKey) {
+      throw new Error("API key is not set. Please set it in the settings.");
+    }
     
     const response = await fetch("https://api.longdo.com/spell-checker/proof", {
       method: "POST",
@@ -39,7 +44,7 @@ async function postProof(text: string) {
       },
       body: JSON.stringify({
         text,
-        key: vscode.workspace.getConfiguration("longdo-spell-checker").get("apiKey"),
+        key: apiKey 
       }),
     });
 
