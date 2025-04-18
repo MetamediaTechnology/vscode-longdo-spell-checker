@@ -5,6 +5,13 @@ All notable changes to the "longdo-spell-checker" extension will be documented i
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
 ## [Released]
+### [0.2.7] : 10/04/2568
+- chore: Add URL to web console page in the setting description
+- refactor: Dialog to ask before change API Key
+- refactor: Add dialog for ask to set key when key is empty.
+- refactor: typescript supported.
+- feat: add check if link in code.
+
 ### [0.2.6] : 08/04/2568
 - feat: Added option to enable/disable English spell checking
 - fix: Corrected language detection for mixed content files
@@ -35,7 +42,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 - fix:Bugs Error spelling when disable on save.
 
 ### [0.2.0] : 24/03/2568
-- reflector(text): remember marked the words and remove highlights all of the word until restart vscode
+- refactor(text): remember marked the words and remove highlights all of the word until restart vscode
 - feat: add English word checking support (excluding grammar)
 - chore: improve offline mode behavior
 - Suppress notification boxes when in offline mode.
@@ -72,7 +79,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ### [0.1.0] : 05/03/2568
  - feat: Quick fix for replace of the word is spell errors.
- - chore: Reflector code.
+ - chore: refactor code.
  - fix: Highlighted and recommend
  
 ### [0.0.1]

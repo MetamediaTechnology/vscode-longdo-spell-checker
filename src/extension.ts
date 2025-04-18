@@ -94,8 +94,23 @@ export function activate(context: vscode.ExtensionContext) {
   const openSetApiKey = vscode.commands.registerCommand(
     Command.OpenSetKey,
     async () => {
+      const currentAPIKey = vscode.workspace
+        .getConfiguration("longdo-spell-checker")
+        .get("apiKey") as string;
+      if (currentAPIKey) {
+        const confirm = await vscode.window.showInformationMessage(
+          "Current API key is already set. Do you want to change it?",
+          { modal: true },
+          "Yes",
+          "No"
+        );
+        if (confirm !== "Yes") {
+          return;
+        }
+      }
       const apiKey = await vscode.window.showInputBox({
         placeHolder: "Enter your Longdo API key",
+        value: currentAPIKey,
         prompt: "Please enter your API key for Longdo Spell Checker",
         ignoreFocusOut: true,
       });
@@ -129,6 +144,7 @@ export function activate(context: vscode.ExtensionContext) {
         "Longdo Spell Checker: Check Spelling (Current Tab)",
         "Longdo Spell Checker: Clear All Errors (Current Tab)",
         "Longdo Spell Checker: Set API Key",
+        "Longdo Spell Checker: Open Web Console",
       ];
       const selected = await vscode.window.showQuickPick(options, {
         placeHolder: "Select an action",
@@ -145,6 +161,9 @@ export function activate(context: vscode.ExtensionContext) {
       }
       if (options[2] === selected) {
         vscode.commands.executeCommand(Command.OpenSetKey);
+      }
+      if (options[3] === selected) {
+        vscode.commands.executeCommand(Command.openWebAPI);
       }
     }
   );
@@ -198,6 +217,22 @@ async function onSpellCheck() {
         ? error.message
         : "An error occurred while checking spelling.";
     const isErrorNetwork = errorMessage.includes("NetworkError");
+
+    const errorApiKeyEmpty = errorMessage.includes("API key is not set");
+    if (errorApiKeyEmpty) {
+      const actionItems = ["Yes", "No", "Get API Key"];
+      const notification = await vscode.window.showWarningMessage(
+        "API key is not set. Do you want to set it now?",
+        ...actionItems
+      );
+      
+      if (notification === "Yes") {
+        vscode.commands.executeCommand(Command.OpenSetKey);
+      } else if (notification === "Get API Key") {
+        vscode.commands.executeCommand(Command.openWebAPI);
+      }
+      return;
+    }
 
     if (!isErrorNetwork) {
       vscode.window.showErrorMessage(errorMessage);
