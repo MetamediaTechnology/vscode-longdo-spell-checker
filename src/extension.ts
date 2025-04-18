@@ -219,8 +219,22 @@ async function onSpellCheck() {
     const isErrorNetwork = errorMessage.includes("NetworkError");
 
     const errorApiKeyEmpty = errorMessage.includes("API key is not set");
+    if (errorApiKeyEmpty) {
+      const actionItems = ["Yes", "No", "Get API Key"];
+      const notification = await vscode.window.showWarningMessage(
+        "API key is not set. Do you want to set it now?",
+        ...actionItems
+      );
+      
+      if (notification === "Yes") {
+        vscode.commands.executeCommand(Command.OpenSetKey);
+      } else if (notification === "Get API Key") {
+        vscode.commands.executeCommand(Command.openWebAPI);
+      }
+      return;
+    }
 
-    if (!isErrorNetwork && !errorApiKeyEmpty) {
+    if (!isErrorNetwork) {
       vscode.window.showErrorMessage(errorMessage);
     }
   }
