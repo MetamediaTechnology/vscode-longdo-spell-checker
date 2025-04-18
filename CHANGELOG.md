@@ -5,9 +5,14 @@ All notable changes to the "longdo-spell-checker" extension will be documented i
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
 ## [Released]
+### [0.2.8] : 18/04/2568
+- refactor: Add dialog for ask to set key when key is empty.
+
+
 ### [0.2.7] : 10/04/2568
-- refactor: don't show dialog error when Api key is empty.
+- refactor: don't show dialog error when API key is empty.
 - chore: Add URL to web console page in the setting description
+- refactor: Dialog to ask before change API Key
 
 ### [0.2.6] : 08/04/2568
 - feat: Added option to enable/disable English spell checking
