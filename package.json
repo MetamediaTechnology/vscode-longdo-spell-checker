@@ -2,17 +2,6 @@
   "name": "longdo-spell-checker",
   "displayName": "Spell Checker by Longdo",
   "icon": "images/logo.png",
-  "tag": [
-    "spell",
-    "checker",
-    "longdo",
-    "longdo-spell-checker",
-    "longdo-spell-check",
-    "longdo-spell",
-    "Thai-spell-checker",
-    "Thai-spell-check",
-    "Thai-spell"
-  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/MetamediaTechnology/vscode-longdo-spell-checker.git"
@@ -35,7 +24,7 @@
   ],
   "description": "Thai/English Spell Checker: A fast and intelligent multilingual spell checker from Longdo Dict online dictionary service.",
   "publisher": "MetamediaTechnology",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "engines": {
     "vscode": "^1.80.0"
   },
@@ -45,28 +34,7 @@
     "Other"
   ],
   "activationEvents": [
-    "onLanguage:markdown",
-    "onLanguage:vue",
-    "onLanguage:javascript",
-    "onLanguage:typescript",
-    "onLanguage:php",
-    "onLanguage:python",
-    "onLanguage:go",
-    "onLanguage:html",
-    "onLanguage:css",
-    "onLanguage:json",
-    "onLanguage:dart",
-    "onLanguage:ruby",
-    "onLanguage:java",
-    "onLanguage:c",
-    "onLanguage:cpp",
-    "onLanguage:csharp",
-    "onLanguage:xml",
-    "onLanguage:yaml",
-    "onLanguage:plaintext",
-    "onLanguage:shellscript",
-    "onLanguage:sql",
-    "onLanguage:rust"
+    "onStartupFinished"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -126,7 +94,8 @@
       {
         "command": "longdo-spell-checker.openSetKey",
         "title": "Longdo Spell Checker: Set API Key"
-      },{
+      },
+      {
         "command": "longdo-spell-checker.openWebConsole",
         "title": "Longdo Spell Checker: Open API Web Console"
       }
@@ -134,6 +103,7 @@
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
+    "package": "vsce package",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile && npm run lint",
@@ -141,6 +111,7 @@
     "test": "vscode-test"
   },
   "devDependencies": {
+    "vsce": "^2.15.0",
     "@types/mocha": "^10.0.10",
     "@types/node": "20.x",
     "@types/vscode": "^1.80.0",
