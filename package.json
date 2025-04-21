@@ -48,7 +48,7 @@
         },
         "longdo-spell-checker.checkOnSave": {
           "type": "boolean",
-          "default": false,
+          "default": true,
           "description": "Check spelling on save"
         },
         "longdo-spell-checker.locale": {
