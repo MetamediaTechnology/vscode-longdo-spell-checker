@@ -5,7 +5,7 @@ import { spellCheckPromises } from "./spell";
 import { ErrorsResult } from "./interface/types";
 import { Diagnostics } from "./diagnostics";
 import { Configuration } from "./configuration";
-import { showStatusBar } from "./ui";
+import { showStatusBar, updateEmoji } from "./ui";
 
 let errorsResult: ErrorsResult[] = [];
 let markCheckList: ErrorsResult[] = [];
@@ -144,6 +144,7 @@ export function activate(context: vscode.ExtensionContext) {
         "Longdo Spell Checker: Check Spelling (Current Tab)",
         "Longdo Spell Checker: Clear All Errors (Current Tab)",
         "Longdo Spell Checker: Set API Key",
+        "Longdo Spell Checker: Open Settings",
         "Longdo Spell Checker: Open Web Console",
       ];
       const selected = await vscode.window.showQuickPick(options, {
@@ -153,17 +154,23 @@ export function activate(context: vscode.ExtensionContext) {
       if (!selected) {
         return;
       }
-      if (options[0] === selected) {
-        vscode.commands.executeCommand(Command.CheckSpelling);
-      }
-      if (options[1] === selected) {
-        vscode.commands.executeCommand(Command.ClearSpell);
-      }
-      if (options[2] === selected) {
-        vscode.commands.executeCommand(Command.OpenSetKey);
-      }
-      if (options[3] === selected) {
-        vscode.commands.executeCommand(Command.openWebAPI);
+      switch (selected) {
+        case "Longdo Spell Checker: Check Spelling (Current Tab)":
+          await onSpellCheck();
+          break;
+        case "Longdo Spell Checker: Clear All Errors (Current Tab)":
+          errorsResult = [];
+          Diagnostics.clearDiagnostics();
+          break;
+        case "Longdo Spell Checker: Set API Key":
+          vscode.commands.executeCommand(Command.OpenSetKey);
+          break;
+        case "Longdo Spell Checker: Open Settings":
+          vscode.commands.executeCommand('workbench.action.openSettings', 'longdo-spell-checker');
+          break;
+        case "Longdo Spell Checker: Open Web Console":
+          vscode.commands.executeCommand(Command.openWebAPI);
+          break;
       }
     }
   );
@@ -194,23 +201,20 @@ async function onSpellCheck() {
 
   try {
     let results = await spellCheckPromises();
-    if (results.length === 0) {
-      if (isEnableOnSave) {
-        return;
-      } else {
-        vscode.window.showInformationMessage("No spelling errors found.");
-        return;
-      }
-    }
-    results = results.filter(
-      (error) => !markCheckList.some((mark) => mark.word === error.word)
+    results = results.filter(error => 
+      !markCheckList.some(mark => mark.word === error.word)
     );
+    
     if (results.length === 0) {
-      vscode.window.showInformationMessage("No spelling errors found.");
+      if (!isEnableOnSave) {
+        vscode.window.showInformationMessage("No spelling errors found.");
+      }
+      updateEmoji("$(pass)");
       return;
     }
     Diagnostics.onShowDiagnostics(results, editor);
     errorsResult = results;
+    updateEmoji("$(warning)");
   } catch (error: unknown) {
     const errorMessage =
       error instanceof Error
