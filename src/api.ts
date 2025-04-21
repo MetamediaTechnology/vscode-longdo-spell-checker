@@ -34,7 +34,7 @@ async function postProof(text: string) {
       throw new Error("NetworkError");
     }
 
-    const apiKey = vscode.workspace.getConfiguration("longdo-spell-checker").get("apiKey");
+    const apiKey = vscode.workspace.getConfiguration("longdoSpellChecker").get("apiKey");
     if (!apiKey) {
       updateEmoji("$(debug-disconnect)");
       throw new Error("API key is not set. Please set it in the settings.");

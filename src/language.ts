@@ -33,10 +33,10 @@ export class Language {
    */
   public switchLanguage() {
     const currentLanguage =
-      vscode.workspace.getConfiguration("longdo-spell-checker").get("locale") ?? "en";
+      vscode.workspace.getConfiguration("longdoSpellChecker").get("locale") ?? "en";
     const newLanguage = currentLanguage === "en" ? "fr" : "en";
     vscode.workspace
-      .getConfiguration("longdo-spell-checker")
+      .getConfiguration("longdoSpellChecker")
       .update("locale", newLanguage, vscode.ConfigurationTarget.Global);
   }
 
@@ -44,7 +44,7 @@ export class Language {
    * Returns the language of the current editor
    */
   public getLanguage(): string {
-    const locale = vscode.workspace.getConfiguration("longdo-spell-checker").get("locale") as string;
+    const locale = vscode.workspace.getConfiguration("longdoSpellChecker").get("locale") as string;
     return locale === "Thai" ? "th" : "en";
   }
 
