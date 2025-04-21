@@ -24,7 +24,7 @@
   ],
   "description": "Thai/English Spell Checker: A fast and intelligent multilingual spell checker from Longdo Dict online dictionary service.",
   "publisher": "MetamediaTechnology",
-  "version": "0.2.7",
+  "version": "0.2.8",
   "engines": {
     "vscode": "^1.80.0"
   },
@@ -41,17 +41,17 @@
     "configuration": {
       "title": "Longdo Spell",
       "properties": {
-        "longdo-spell-checker.apiKey": {
+        "longdoSpellChecker.apiKey": {
           "type": "string",
           "default": "",
           "description": "Longdo Spell Checker Api Key"
         },
-        "longdo-spell-checker.checkOnSave": {
+        "longdoSpellChecker.checkOnSave": {
           "type": "boolean",
-          "default": false,
+          "default": true,
           "description": "Check spelling on save"
         },
-        "longdo-spell-checker.locale": {
+        "longdoSpellChecker.locale": {
           "type": "string",
           "enum": [
             "Thai",
@@ -60,7 +60,7 @@
           "default": "Thai",
           "description": "Set the primary language for spell checking"
         },
-        "longdo-spell-checker.language": {
+        "longdoSpellChecker.language": {
           "type": "array",
           "default": [
             "Thai",

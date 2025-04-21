@@ -70,7 +70,7 @@ export class TextProcessor {
       document.fileName.split(".").pop()?.toLowerCase() || "txt";
     const isSupportedFile = fileExtension in languageMap;
     
-    const config = vscode.workspace.getConfiguration("longdo-spell-checker");
+    const config = vscode.workspace.getConfiguration("longdoSpellChecker");
     const languages = config.get<string[]>("language") || [];
     const isEnglishEnabled = languages.includes("English");
     

@@ -1,4 +1,5 @@
 import { ApiResponse } from "./interface/types";
+import { updateEmoji } from "./ui";
 import * as vscode from "vscode";
 
 /**
@@ -29,11 +30,13 @@ async function postProof(text: string) {
   try {
     const isConnected = await checkInternetConnection();
     if (!isConnected) {
+      updateEmoji("$(debug-disconnect)");
       throw new Error("NetworkError");
     }
 
-    const apiKey = vscode.workspace.getConfiguration("longdo-spell-checker").get("apiKey");
+    const apiKey = vscode.workspace.getConfiguration("longdoSpellChecker").get("apiKey");
     if (!apiKey) {
+      updateEmoji("$(debug-disconnect)");
       throw new Error("API key is not set. Please set it in the settings.");
     }
     
