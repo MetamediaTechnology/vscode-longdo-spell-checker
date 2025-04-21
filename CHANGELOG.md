@@ -5,6 +5,13 @@ All notable changes to the "longdo-spell-checker" extension will be documented i
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
 ## [Released]
+### [0.2.8] : 21/04/2568
+- feat: Set spell checking on save as the default behavior
+- feat: Enhanced status bar to reflect different states:
+    - Checkmark when no spelling errors are found
+    - Disconnection icon when API key is missing
+    - Offline indicator when internet connection is unavailable
+
 ### [0.2.7] : 10/04/2568
 - chore: Add URL to web console page in the setting description
 - refactor: Dialog to ask before change API Key
