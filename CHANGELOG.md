@@ -7,8 +7,9 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ## [Released]
 ### [0.2.8] : 21/04/2568
 - feat: Set spell checking on save as the default behavior
+- refactor: Change configuration name from longdo-spell-checker to Longdo Spell Checker.
 - feat: Enhanced status bar to reflect different states:
-    - Checkmark when no spelling errors are found
+    - Check mark when no spelling errors are found
     - Disconnection icon when API key is missing
     - Offline indicator when internet connection is unavailable
 
