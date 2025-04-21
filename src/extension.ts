@@ -9,26 +9,9 @@ import { showStatusBar, updateEmoji } from "./ui";
 
 let errorsResult: ErrorsResult[] = [];
 let markCheckList: ErrorsResult[] = [];
-let isEnableOnSave = false;
 
 export function activate(context: vscode.ExtensionContext) {
   showStatusBar(context);
-
-  vscode.workspace.onDidChangeConfiguration((event) => {
-    if (event.affectsConfiguration("longdo-spell-checker.checkOnSave")) {
-      vscode.window
-        .showInformationMessage(
-          "Longdo Spell Checker: Settings changed. Restart window for changes to take effect?",
-          "Restart",
-          "Later"
-        )
-        .then((selection) => {
-          if (selection === "Restart") {
-            vscode.commands.executeCommand("workbench.action.reloadWindow");
-          }
-        });
-    }
-  });
 
   context.subscriptions.push(
     vscode.languages.registerCodeActionsProvider(
@@ -52,12 +35,12 @@ export function activate(context: vscode.ExtensionContext) {
     async () => {
       const url = "https://map.longdo.com/console";
       try {
-          vscode.env.openExternal(vscode.Uri.parse(url));
+        vscode.env.openExternal(vscode.Uri.parse(url));
       } catch (error) {
-          console.error("Failed to open URL:", error);
-          vscode.window.showErrorMessage(
-            "Failed to open Longdo Web Console. Please check your internet connection."
-          );
+        console.error("Failed to open URL:", error);
+        vscode.window.showErrorMessage(
+          "Failed to open Longdo Web Console. Please check your internet connection."
+        );
       }
     }
   );
@@ -95,7 +78,7 @@ export function activate(context: vscode.ExtensionContext) {
     Command.OpenSetKey,
     async () => {
       const currentAPIKey = vscode.workspace
-        .getConfiguration("longdo-spell-checker")
+        .getConfiguration("longdoSpellChecker")
         .get("apiKey") as string;
       if (currentAPIKey) {
         const confirm = await vscode.window.showInformationMessage(
@@ -116,7 +99,7 @@ export function activate(context: vscode.ExtensionContext) {
       });
 
       if (apiKey) {
-        const config = vscode.workspace.getConfiguration("longdo-spell-checker");
+        const config = vscode.workspace.getConfiguration("longdoSpellChecker");
         try {
           await config.update(
             "apiKey",
@@ -166,7 +149,10 @@ export function activate(context: vscode.ExtensionContext) {
           vscode.commands.executeCommand(Command.OpenSetKey);
           break;
         case "Longdo Spell Checker: Open Settings":
-          vscode.commands.executeCommand('workbench.action.openSettings', 'longdo-spell-checker');
+          vscode.commands.executeCommand(
+            "workbench.action.openSettings",
+            "longdo-spell-checker"
+          );
           break;
         case "Longdo Spell Checker: Open Web Console":
           vscode.commands.executeCommand(Command.openWebAPI);
@@ -174,10 +160,6 @@ export function activate(context: vscode.ExtensionContext) {
       }
     }
   );
-
-  isEnableOnSave = vscode.workspace
-    .getConfiguration("longdo-spell-checker")
-    .get("checkOnSave", false);
 
   context.subscriptions.push(openWebConsole);
   context.subscriptions.push(disposable);
@@ -201,12 +183,16 @@ async function onSpellCheck() {
 
   try {
     let results = await spellCheckPromises();
-    results = results.filter(error => 
-      !markCheckList.some(mark => mark.word === error.word)
+    results = results.filter(
+      (error) => !markCheckList.some((mark) => mark.word === error.word)
     );
-    
+
     if (results.length === 0) {
-      if (!isEnableOnSave) {
+      if (
+        vscode.workspace
+          .getConfiguration("longdoSpellChecker")
+          .get("checkOnSave")
+      ) {
         vscode.window.showInformationMessage("No spelling errors found.");
       }
       updateEmoji("$(pass)");
@@ -229,7 +215,7 @@ async function onSpellCheck() {
         "API key is not set. Do you want to set it now?",
         ...actionItems
       );
-      
+
       if (notification === "Yes") {
         vscode.commands.executeCommand(Command.OpenSetKey);
       } else if (notification === "Get API Key") {
@@ -278,17 +264,18 @@ function listenerDocumentChanged() {
 }
 
 function listenerDocumentSaved(): vscode.Disposable {
-  if (!isEnableOnSave) {
-    return { dispose: () => {} };
-  }
   return vscode.workspace.onDidSaveTextDocument((document) => {
     const editor = vscode.window.activeTextEditor;
     if (!editor) {
       return;
     }
-    textProcessor.processDocument({ document }).then(() => {
-      onSpellCheck();
-    });
+    if (
+      vscode.workspace.getConfiguration("longdoSpellChecker").get("checkOnSave")
+    ) {
+      textProcessor.processDocument({ document }).then(() => {
+        onSpellCheck();
+      });
+    }
   });
 }
 
