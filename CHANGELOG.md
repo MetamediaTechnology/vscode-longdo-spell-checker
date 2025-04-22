@@ -66,7 +66,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 - improve: Refactored implementation to use dynamic variable references for better maintainability
 
 
-### [0.1.5] : 17/03/256 perf: Improved code performance through optimization
+### [0.1.5] : 17/03/2568 perf: Improved code performance through optimization
 - improve: Enhanced TypeScript typing's for better type safety and developer experience
 
 ### [0.1.4] : 13/03/2568
