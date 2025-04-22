@@ -5,6 +5,9 @@ All notable changes to the "longdo-spell-checker" extension will be documented i
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
 ## [Released]
+### [0.2.9] : 22/04/2568
+- refactor: Improved notification for better experience.
+
 ### [0.2.8] : 21/04/2568
 - feat: Set spell checking on save as the default behavior
 - refactor: Change configuration name from longdo-spell-checker to Longdo Spell Checker.
@@ -63,8 +66,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 - improve: Refactored implementation to use dynamic variable references for better maintainability
 
 
-### [0.1.5] : 17/03/2568
-- perf: Improved code performance through optimization
+### [0.1.5] : 17/03/2568 perf: Improved code performance through optimization
 - improve: Enhanced TypeScript typing's for better type safety and developer experience
 
 ### [0.1.4] : 13/03/2568
