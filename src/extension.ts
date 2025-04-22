@@ -5,7 +5,7 @@ import { spellCheckPromises } from "./spell";
 import { ErrorsResult } from "./interface/types";
 import { Diagnostics } from "./diagnostics";
 import { Configuration } from "./configuration";
-import { showStatusBar, updateEmoji } from "./ui";
+import { showStatusBar, updateEmoji } from "./statusbar";
 
 let errorsResult: ErrorsResult[] = [];
 let markCheckList: ErrorsResult[] = [];
@@ -188,13 +188,6 @@ async function onSpellCheck() {
     );
 
     if (results.length === 0) {
-      if (
-        vscode.workspace
-          .getConfiguration("longdoSpellChecker")
-          .get("checkOnSave")
-      ) {
-        vscode.window.showInformationMessage("No spelling errors found.");
-      }
       updateEmoji("$(pass)");
       return;
     }

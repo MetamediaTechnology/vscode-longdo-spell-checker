@@ -1,5 +1,5 @@
 import { ApiResponse } from "./interface/types";
-import { updateEmoji } from "./ui";
+import { updateEmoji } from "./statusbar";
 import * as vscode from "vscode";
 
 /**
