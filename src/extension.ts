@@ -171,6 +171,10 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(listenerDocumentSaved());
 }
 
+let checkCountWithDefaultKey = 0;
+const DEFAULT_API_KEY = "longdospellcheckervscodedemo";
+const NOTIFICATION_THRESHOLD = 3;
+
 async function onSpellCheck() {
   errorsResult = [];
   Diagnostics.clearDiagnostics();
@@ -178,11 +182,38 @@ async function onSpellCheck() {
   if (!editor) {
     return;
   }
+  
+  // Check if using default API key
+  const apiKey = vscode.workspace
+    .getConfiguration("longdoSpellChecker")
+    .get("apiKey") as string || DEFAULT_API_KEY;
+    
+  if (apiKey === DEFAULT_API_KEY) {
+    checkCountWithDefaultKey++;
+
+    if (checkCountWithDefaultKey >= NOTIFICATION_THRESHOLD) {
+      const action = await vscode.window.showWarningMessage(
+        "You're using the default API key. For best results, please set your own API key.",
+        "Set API Key", "Get API Key", "Dismiss"
+      );
+      
+      if (action === "Set API Key") {
+        vscode.commands.executeCommand(Command.OpenSetKey);
+        return;
+      } else if (action === "Get API Key") {
+        vscode.commands.executeCommand(Command.openWebAPI);
+        return;
+      }
+      
+      checkCountWithDefaultKey = 0; 
+    }
+  }
+  
   const document = editor.document;
   await textProcessor.processDocument({ document });
 
   try {
-    let results = await spellCheckPromises();
+    let results = await spellCheckPromises(apiKey);
     results = results.filter(
       (error) => !markCheckList.some((mark) => mark.word === error.word)
     );

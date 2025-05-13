@@ -8,12 +8,12 @@ type SpellCheckResult = ProofResponse & { originalPosition: Position };
  * Performs spell checking on all processed text segments
  * @returns Promise resolving to an array of spell check results with their original positions
  */
-export async function spellCheckPromises(): Promise<SpellCheckResult[]> {
+export async function spellCheckPromises(apiKey: string): Promise<SpellCheckResult[]> {
   try {
     const textData = textProcessor.getTextData();
     
     const spellCheckPromises = textData.map(async (data) => {
-      const spell = await postProof(data.text);
+      const spell = await postProof(data.text,apiKey );
       const results = spell?.result || [];
 
       return results
