@@ -5,6 +5,9 @@ All notable changes to the "longdo-spell-checker" extension will be documented i
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
 ## [Released]
+### [0.2.10] : 13/04/2568
+- refactor: Can using the extension with default key
+
 ### [0.2.9] : 22/04/2568
 - refactor: Improved notification for better experience.
 
