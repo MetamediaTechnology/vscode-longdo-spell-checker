@@ -74,7 +74,7 @@ export class TextProcessor {
     const languages = config.get<string[]>("language") || [];
     const isEnglishEnabled = languages.includes("English");
 
-    // If document line is morethan 1500 ask user to continue
+    // If document line is more than 1500 ask user to continue
     const lineCount = document.lineCount;
     if (lineCount > 1500) {
       const message = `This document has ${lineCount} lines. Do you want to continue?`;

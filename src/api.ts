@@ -33,7 +33,6 @@ async function postProof(text: string, apiKey: string): Promise<ApiResponse> {
       updateEmoji("$(debug-disconnect)");
       throw new Error("NetworkError");
     }
-    console.log("API Key: ", apiKey);
     const response = await fetch("https://api.longdo.com/spell-checker/proof", {
       method: "POST",
       headers: {
