@@ -73,6 +73,23 @@ export class TextProcessor {
     const config = vscode.workspace.getConfiguration("longdoSpellChecker");
     const languages = config.get<string[]>("language") || [];
     const isEnglishEnabled = languages.includes("English");
+
+    // If document line is morethan 1500 ask user to continue
+    const lineCount = document.lineCount;
+    if (lineCount > 1500) {
+      const message = `This document has ${lineCount} lines. Do you want to continue?`;
+      const result = await vscode.window.showInformationMessage(message, {
+        modal: false
+      },
+      "Continue",
+      "Cancel");
+      
+      if (result !== "Continue") {
+        return [];
+      }
+   
+    }
+    // If the file is not supported or English is disabled, process Thai text onl
     
     // Process Thai text for unsupported files or when English is disabled
     if (!isSupportedFile || !isEnglishEnabled) {
