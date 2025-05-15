@@ -6,9 +6,13 @@ import { ErrorsResult } from "./interface/types";
 import { Diagnostics } from "./diagnostics";
 import { Configuration } from "./configuration";
 import { showStatusBar, updateEmoji } from "./statusbar";
+import { showErrorAPIKey, showWarningAPIKey } from "./notification";
 
 let errorsResult: ErrorsResult[] = [];
 let markCheckList: ErrorsResult[] = [];
+let checkCountWithDefaultKey = 0;
+const DEFAULT_API_KEY = "longdospellcheckervscodedemo";
+const NOTIFICATION_THRESHOLD = 3;
 
 export function activate(context: vscode.ExtensionContext) {
   showStatusBar(context);
@@ -178,11 +182,33 @@ async function onSpellCheck() {
   if (!editor) {
     return;
   }
+  
+  // Check if using default API key
+  const apiKey = vscode.workspace
+    .getConfiguration("longdoSpellChecker")
+    .get("apiKey") as string || DEFAULT_API_KEY;
+    
+  if (apiKey === DEFAULT_API_KEY) {
+    checkCountWithDefaultKey++;
+
+    if (checkCountWithDefaultKey >= NOTIFICATION_THRESHOLD) {
+      showWarningAPIKey();
+      checkCountWithDefaultKey = 0; 
+    }
+  }
+  
   const document = editor.document;
   await textProcessor.processDocument({ document });
 
   try {
-    let results = await spellCheckPromises();
+    const textData = await textProcessor.getTextData();
+    if (textData.length === 0) {
+      return;
+    }
+    if (textData.length >= 3 && apiKey === DEFAULT_API_KEY) {
+      showWarningAPIKey();
+    }
+    let results = await spellCheckPromises(apiKey, textData);
     results = results.filter(
       (error) => !markCheckList.some((mark) => mark.word === error.word)
     );
@@ -200,20 +226,9 @@ async function onSpellCheck() {
         ? error.message
         : "An error occurred while checking spelling.";
     const isErrorNetwork = errorMessage.includes("NetworkError");
-
     const errorApiKeyEmpty = errorMessage.includes("API key is not set");
     if (errorApiKeyEmpty) {
-      const actionItems = ["Yes", "No", "Get API Key"];
-      const notification = await vscode.window.showWarningMessage(
-        "API key is not set. Do you want to set it now?",
-        ...actionItems
-      );
-
-      if (notification === "Yes") {
-        vscode.commands.executeCommand(Command.OpenSetKey);
-      } else if (notification === "Get API Key") {
-        vscode.commands.executeCommand(Command.openWebAPI);
-      }
+      showErrorAPIKey();
       return;
     }
 
