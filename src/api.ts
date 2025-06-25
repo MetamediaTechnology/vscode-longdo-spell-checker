@@ -33,6 +33,9 @@ async function postProof(text: string, apiKey: string): Promise<ApiResponse> {
       updateEmoji("$(debug-disconnect)");
       throw new Error("NetworkError");
     }
+    const enableCamel = vscode.workspace
+            .getConfiguration("longdoSpellChecker")
+            .get("camelCase") as boolean || false;
     const response = await fetch("https://api.longdo.com/spell-checker/proof", {
       method: "POST",
       headers: {
@@ -40,7 +43,8 @@ async function postProof(text: string, apiKey: string): Promise<ApiResponse> {
       },
       body: JSON.stringify({
         text,
-        key: apiKey 
+        key: apiKey,
+        camel_case: enableCamel, 
       }),
     });
 
