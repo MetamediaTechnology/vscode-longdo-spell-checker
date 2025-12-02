@@ -75,19 +75,18 @@ export class TextProcessor {
     const isEnglishEnabled = languages.includes("English");
 
     // If document line is more than 1500 ask user to continue
-    const lineCount = document.lineCount;
-    if (lineCount > 1500) {
-      const message = `This document has ${lineCount} lines. Do you want to continue?`;
+    const textLength = document.getText().length;
+    if (textLength > 100000) {
+      const message = `This document has ${textLength} characters. Do you want to continue?`;
       const result = await vscode.window.showInformationMessage(message, {
-        modal: false
+      modal: false
       },
       "Continue",
       "Cancel");
       
       if (result !== "Continue") {
-        return [];
+      return [];
       }
-   
     }
     // If the file is not supported or English is disabled, process Thai text onl
     
@@ -149,6 +148,8 @@ export class TextProcessor {
           return;
         }
         break;
+      case "vue":
+        
       case "md":
         if (StringUtils.markdownLink(lineText)) {
           return;
